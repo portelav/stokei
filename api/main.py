@@ -1,4 +1,4 @@
-"""API do Stokei, sistema de estoque (Google Cloud Run functions, Python).
+"""API e site do Stokei, sistema de estoque (Google Cloud Run, Python).
 
 Rotas:
     GET    /produtos?busca=texto        lista produtos (busca por nome, código ou categoria) com flag de alerta
@@ -8,15 +8,21 @@ Rotas:
     GET    /movimentacoes?produto_id=   histórico (mais recentes primeiro)
     GET    /relatorio                   resumo do estoque (dashboard)
 
+Quando a variável STOKEI_WEB aponta para a pasta do site (como no Dockerfile),
+o mesmo serviço também entrega as páginas: "/" devolve o index.html e caminhos
+com extensão (ex.: /produtos.html, /style.css) devolvem o arquivo da pasta.
+
 Os dados ficam no Firestore. A autenticação com o Firestore é feita pela conta
-de serviço da função (credenciais do ambiente), sem chave ou senha no código.
+de serviço do serviço (credenciais do ambiente), sem chave ou senha no código.
 """
 
 import json
 import logging
 import os
 
+import flask
 import functions_framework
+from werkzeug.exceptions import NotFound
 
 import estoque
 from memoria import NaoEncontrado, RepositorioMemoria
@@ -204,8 +210,40 @@ def cabecalhos_cors():
     }
 
 
+def arquivo_do_site(caminho):
+    """Nome do arquivo do site pedido em `caminho`, ou None se for uma rota da API.
+
+    Rotas da API não têm extensão (/produtos, /relatorio...); arquivos do site têm
+    (/produtos.html, /style.css). "/" é a página inicial.
+    """
+    if not os.environ.get("STOKEI_WEB"):
+        return None
+    nome = caminho.strip("/")
+    if not nome:
+        return "index.html"
+    if "." in nome.rsplit("/", 1)[-1]:
+        return nome
+    return None
+
+
+def servir_site(nome):
+    # send_from_directory recusa caminhos que saiam da pasta (ex.: ../main.py)
+    try:
+        resposta = flask.send_from_directory(os.environ["STOKEI_WEB"], nome, max_age=0)
+    except NotFound:  # arquivo inexistente ou caminho fora da pasta
+        return json.dumps({"erro": "Página não encontrada"}, ensure_ascii=False), 404, {
+            "Content-Type": "application/json; charset=utf-8"}
+    resposta.headers["Cache-Control"] = "no-cache"
+    return resposta
+
+
 @functions_framework.http
 def api(request):
+    if request.method == "GET":
+        nome = arquivo_do_site(request.path)
+        if nome:
+            return servir_site(nome)
+
     if request.method == "OPTIONS":
         return "", 204, cabecalhos_cors()
 

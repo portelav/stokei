@@ -1,0 +1,12 @@
+# Arquivos que NÃO são enviados ao Cloud Build no "gcloud run deploy --source ."
+.gcloudignore
+.git/
+.gitignore
+docs/
+scripts/
+servidor-teste/
+servidor-teste.zip
+api/.venv/
+api/tests/
+api/.pytest_cache/
+**/__pycache__/

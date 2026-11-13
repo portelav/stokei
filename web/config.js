@@ -1,4 +1,4 @@
-// Endereço da API (Cloud Run functions), sem barra no final.
-// O scripts/deploy.sh troca esta linha pela URL publicada.
-// Local (functions-framework): http://localhost:8080
-const API_URL = "http://localhost:8080";
+// Endereço da API, sem barra no final.
+// Vazio = a API está no mesmo endereço do site (o contêiner do Cloud Run entrega os dois).
+// Só preencha se o site estiver num endereço e a API em outro.
+const API_URL = "";

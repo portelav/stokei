@@ -1,0 +1,7 @@
+# Só o que a imagem precisa: o código da API e o site
+*
+!api/main.py
+!api/estoque.py
+!api/memoria.py
+!api/requirements.txt
+!web/

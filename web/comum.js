@@ -52,7 +52,7 @@ async function api(caminho, opcoes = {}) {
     });
   } catch {
     marcarApi(false);
-    throw new Error(`Sem conexão com a API (${API_URL}). Confira se ela está no ar e recarregue a página.`);
+    throw new Error(`Sem conexão com a API (${API_URL || location.origin}). Confira se ela está no ar e recarregue a página.`);
   }
   marcarApi(true);
   if (resp.status === 204) return null;
