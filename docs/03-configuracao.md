@@ -84,8 +84,8 @@ As coleções `produtos` e `movimentacoes` são criadas sozinhas na primeira gra
 2. Nome: `<ID-do-projeto>-stokei-web`. Local: **Region, southamerica-east1**. Classe: **Standard**.
 3. **Desmarque** "Aplicar a prevenção do acesso público" e mantenha o **controle de acesso uniforme**.
 4. No bucket, vá em **Permissões → Conceder acesso**. Principal: `allUsers`. Papel: **Leitor de objetos do Storage**. Isso deixa o site público só para leitura.
-5. Em `web/app.js`, troque a linha `const API_URL = "http://localhost:8080";` pela URL do Passo 5, sem barra no final.
-6. Faça **upload** dos três arquivos da pasta `web/` para o bucket: `index.html`, `style.css` e `app.js`.
+5. Em `web/config.js`, troque a linha `const API_URL = "http://localhost:8080";` pela URL do Passo 5, sem barra no final.
+6. Faça **upload** de todos os arquivos da pasta `web/` para o bucket: as páginas `.html`, o `style.css` e os scripts `.js`.
 7. Abra `https://storage.googleapis.com/<ID-do-projeto>-stokei-web/index.html`.
 
 📸 **Print 9:** bucket com os 3 arquivos do site e a permissão `allUsers` como leitor.

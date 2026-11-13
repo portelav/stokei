@@ -27,9 +27,9 @@
 **Passos:**
 
 1. **Acesso pela internet.** Mostre a URL pública do site na barra do navegador. Se der, abra também no celular de alguém.
-2. **Cadastro (gravação).** Cadastre código "LEI-01", "Leite integral 1L", categoria "Laticínios", quantidade 3, mínimo 6, preço 5,49. A linha aparece **em vermelho**: o alerta foi calculado pela função.
+2. **Cadastro (gravação).** Cadastre código "LEI-01", "Leite integral 1L", categoria "Laticínios", quantidade 3, mínimo 6, preço 5,49. O produto aparece marcado como **"Abaixo do mínimo"**, com a faixa amarela e azul ao lado: o alerta foi calculado pela função.
 3. **Prova de que está na nuvem.** Troque para a aba do Firestore, atualize e mostre o documento novo na coleção `produtos`.
-4. **Processamento.** Registre uma **entrada de 5** no Leite. O saldo vai para 8 e a linha deixa de ficar vermelha. Aponte o relatório atualizando: total de itens e valor do estoque.
+4. **Processamento.** Registre uma **entrada de 5** no Leite. O saldo vai para 8 e o Leite sai da lista "Repor estoque" do Dashboard. Aponte os indicadores do Dashboard atualizados: total de itens e valor do estoque.
 5. **Histórico.** Mostre a movimentação no histórico e, no Firestore, o documento na coleção `movimentacoes`.
 6. **Entrada inválida.** Tente uma **saída de 100**. Aparece a mensagem "Estoque insuficiente" e o saldo não muda. Depois, tente cadastrar outro produto com o código "LEI-01". O cadastro é recusado por código repetido.
 7. **Busca.** Digite "lat" na busca: o filtro funciona pela categoria.

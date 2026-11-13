@@ -67,13 +67,14 @@ echo "API publicada em: ${URL_API}"
 
 passo "Publicando o site com o endereço da API"
 TMP="$(mktemp -d)"
-cp "${RAIZ}/web/index.html" "${RAIZ}/web/style.css" "$TMP/"
-sed "s#const API_URL = \".*\";#const API_URL = \"${URL_API}\";#" "${RAIZ}/web/app.js" > "${TMP}/app.js"
-gcloud storage cp "${TMP}/index.html" "${BUCKET}/index.html" \
+cp "${RAIZ}"/web/*.html "${RAIZ}"/web/*.css "${RAIZ}"/web/*.js "$TMP/"
+# Só o config.js guarda o endereço da API
+sed -i "s#const API_URL = \".*\";#const API_URL = \"${URL_API}\";#" "${TMP}/config.js"
+gcloud storage cp "${TMP}"/*.html "${BUCKET}/" \
   --cache-control="no-cache" --content-type="text/html; charset=utf-8"
-gcloud storage cp "${TMP}/style.css" "${BUCKET}/style.css" \
+gcloud storage cp "${TMP}"/*.css "${BUCKET}/" \
   --cache-control="no-cache" --content-type="text/css; charset=utf-8"
-gcloud storage cp "${TMP}/app.js" "${BUCKET}/app.js" \
+gcloud storage cp "${TMP}"/*.js "${BUCKET}/" \
   --cache-control="no-cache" --content-type="text/javascript; charset=utf-8"
 rm -rf "$TMP"
 

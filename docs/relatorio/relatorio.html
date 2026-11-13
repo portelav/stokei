@@ -58,7 +58,7 @@
   <tr><td>F1. Cadastro de produtos</td><td>Código (único), nome, categoria, quantidade inicial, estoque mínimo e preço unitário, com validação no servidor.</td></tr>
   <tr><td>F2. Busca</td><td>Filtro por nome, código ou categoria, sem diferenciar maiúsculas de minúsculas.</td></tr>
   <tr><td>F3. Entradas e saídas</td><td>Registro de movimentações. Saída maior que o saldo é recusada.</td></tr>
-  <tr><td>F4. Alerta de estoque baixo</td><td>Produto abaixo do mínimo é destacado em vermelho.</td></tr>
+  <tr><td>F4. Alerta de estoque baixo</td><td>Produto abaixo do mínimo recebe o selo "Abaixo do mínimo" e aparece na lista "Repor estoque" do Dashboard.</td></tr>
   <tr><td>F5. Dashboard</td><td>Total de produtos, itens em estoque, valor do estoque e quantidade de itens críticos.</td></tr>
   <tr><td>F6. Histórico</td><td>Últimas movimentações com data, tipo, quantidade e saldo após a operação.</td></tr>
 </table>
@@ -96,11 +96,11 @@
 <div class="lado">
   <figure style="margin:0">
     <img src="../evidencias/tela-sistema.png" alt="Tela do Stokei no computador">
-    <figcaption>Figura 2: Tela do sistema, com dois produtos abaixo do mínimo (em vermelho), dashboard e histórico.</figcaption>
+    <figcaption>Figura 2: Dashboard, com os indicadores do estoque, os dois produtos abaixo do mínimo e as últimas movimentações.</figcaption>
   </figure>
   <figure style="margin:0">
     <img src="../evidencias/tela-celular.png" alt="Tela do Stokei no celular" style="max-height:300px">
-    <figcaption>Figura 3: Layout no celular.</figcaption>
+    <figcaption>Figura 3: Página de produtos no celular.</figcaption>
   </figure>
 </div>
 <table>

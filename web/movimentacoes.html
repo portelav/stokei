@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movimentações | Stokei</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 11V3a1 1 0 0 1 1-1h8l11 11-9 9z' fill='%23f5c518' stroke='%2316324a' stroke-width='1.5'/%3E%3Ccircle cx='7' cy='7' r='1.8' fill='%2316324a'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <aside class="lateral">
+    <a class="marca" href="index.html">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 11V3a1 1 0 0 1 1-1h8l11 11-9 9z" fill="#f5c518"/><circle cx="7" cy="7" r="1.8" fill="#16324a"/></svg>
+      Stokei
+    </a>
+    <nav class="menu" aria-label="Principal">
+      <ul>
+        <li><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
+        <li><a href="produtos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Produtos</a></li>
+        <li><a href="movimentacoes.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20V4"/><path d="m3 8 4-4 4 4"/><path d="M17 4v16"/><path d="m13 16 4 4 4-4"/></svg>Movimentações</a></li>
+        <li><a href="historico.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico</a></li>
+      </ul>
+    </nav>
+    <p class="status-api" id="status-api"><span class="ponto" aria-hidden="true"></span><span class="texto">Conectando à API</span></p>
+  </aside>
+
+  <main id="conteudo">
+    <header class="topo-pagina">
+      <div>
+        <h1>Movimentações</h1>
+        <p>Registre a chegada de mercadoria (entrada) ou a retirada e venda (saída). O saldo é atualizado na hora.</p>
+      </div>
+    </header>
+
+    <div class="colunas">
+      <section class="painel" aria-labelledby="t-registrar">
+        <h2 id="t-registrar">Registrar movimentação</h2>
+        <form id="form-movimentacao" class="formulario" hidden>
+          <label class="campo"><span>Produto</span><select name="id" id="produto" required></select></label>
+          <fieldset class="tipo">
+            <legend>Tipo</legend>
+            <div class="tipo-opcoes">
+              <label><input type="radio" name="tipo" value="entrada" checked><span>Entrada</span></label>
+              <label><input type="radio" name="tipo" value="saida"><span>Saída</span></label>
+            </div>
+          </fieldset>
+          <label class="campo"><span>Quantidade</span><input name="quantidade" id="quantidade" type="number" min="1" step="1" value="1" required inputmode="numeric"></label>
+          <dl class="previa" id="previa">
+            <div><dt>Saldo atual</dt><dd id="saldo-atual">–</dd></div>
+            <div><dt>Saldo depois</dt><dd id="saldo-apos" class="apos">–</dd></div>
+            <div><dt>Mínimo</dt><dd id="saldo-minimo">–</dd></div>
+          </dl>
+          <p class="previa-aviso" id="previa-aviso" hidden></p>
+          <div class="acoes-form">
+            <button class="botao" type="submit" id="botao-registrar">Registrar entrada</button>
+          </div>
+        </form>
+        <p class="vazio" id="sem-produtos" hidden>Nenhum produto cadastrado. <a href="produtos.html">Cadastre um produto</a> para registrar movimentações.</p>
+      </section>
+
+      <section class="painel" id="painel-recentes" aria-labelledby="t-recentes" hidden>
+        <div class="painel-cabecalho">
+          <div>
+            <h2 id="t-recentes">Movimentações deste produto</h2>
+            <p id="recentes-produto"></p>
+          </div>
+          <a id="link-historico" href="historico.html">Ver no histórico</a>
+        </div>
+        <ul class="lista" id="lista-recentes"></ul>
+        <p class="vazio" id="recentes-vazio" hidden>Este produto ainda não teve movimentações.</p>
+      </section>
+    </div>
+  </main>
+
+  <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="comum.js"></script>
+  <script src="movimentacoes.js"></script>
+</body>
+</html>

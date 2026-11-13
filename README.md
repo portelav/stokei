@@ -42,8 +42,15 @@ api/                       API (Python 3.12, Cloud Run functions)
   estoque.py               regras de negócio (funções puras)
   memoria.py               repositório em memória (testes e execução local)
   tests/                   58 testes (pytest)
-web/                       site
-  index.html · style.css · app.js
+web/                       site (HTML, CSS e JS puros)
+  index.html               Dashboard
+  produtos.html            cadastro, busca e lista de produtos
+  movimentacoes.html       entradas e saídas
+  historico.html           histórico de movimentações
+  style.css                visual de todas as páginas
+  config.js                endereço da API (o deploy.sh preenche)
+  comum.js                 chamada à API e peças de tela compartilhadas
+  dashboard.js · produtos.js · movimentacoes.js · historico.js
 scripts/
   deploy.sh                cria a infraestrutura e publica (Cloud Shell)
   testar-api.sh            executa os testes da Etapa 5 contra a API
@@ -101,7 +108,7 @@ set STOKEI_MEMORIA=1                   # Linux/Mac: export STOKEI_MEMORIA=1
 functions-framework --target=api --port=8080
 ```
 
-Abra `web/index.html` no navegador. O `API_URL` em `web/app.js` já aponta para `http://localhost:8080`. Para testar a API: `bash scripts/testar-api.sh http://localhost:8080`.
+Abra `web/index.html` no navegador. O `API_URL` em `web/config.js` já aponta para `http://localhost:8080`. Para testar a API: `bash scripts/testar-api.sh http://localhost:8080`.
 
 Para rodar localmente contra o Firestore real, faça `gcloud auth application-default login`, defina `GOOGLE_CLOUD_PROJECT=<ID-do-projeto>` e suba o servidor sem `STOKEI_MEMORIA`.
 

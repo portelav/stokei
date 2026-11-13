@@ -3,82 +3,75 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stokei</title>
+  <title>Dashboard | Stokei</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 11V3a1 1 0 0 1 1-1h8l11 11-9 9z' fill='%23f5c518' stroke='%2316324a' stroke-width='1.5'/%3E%3Ccircle cx='7' cy='7' r='1.8' fill='%2316324a'/%3E%3C/svg%3E">
 </head>
 <body>
-  <header><h1>Stokei <small>controle de estoque</small></h1></header>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-  <main>
-    <div id="mensagem" role="status"></div>
+  <aside class="lateral">
+    <a class="marca" href="index.html">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 11V3a1 1 0 0 1 1-1h8l11 11-9 9z" fill="#f5c518"/><circle cx="7" cy="7" r="1.8" fill="#16324a"/></svg>
+      Stokei
+    </a>
+    <nav class="menu" aria-label="Principal">
+      <ul>
+        <li><a href="index.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a></li>
+        <li><a href="produtos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Produtos</a></li>
+        <li><a href="movimentacoes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20V4"/><path d="m3 8 4-4 4 4"/><path d="M17 4v16"/><path d="m13 16 4 4 4-4"/></svg>Movimentações</a></li>
+        <li><a href="historico.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico</a></li>
+      </ul>
+    </nav>
+    <p class="status-api" id="status-api"><span class="ponto" aria-hidden="true"></span><span class="texto">Conectando à API</span></p>
+  </aside>
 
-    <section>
-      <h2>Cadastrar produto</h2>
-      <form id="form-produto">
-        <label>Código <input name="codigo" maxlength="30" placeholder="ex.: ARZ-05"></label>
-        <label>Nome <input name="nome" required maxlength="100"></label>
-        <label>Categoria <input name="categoria" maxlength="50" placeholder="ex.: Mercearia"></label>
-        <label>Quantidade <input name="quantidade" type="number" min="0" step="1" value="0" required></label>
-        <label>Mínimo <input name="minimo" type="number" min="0" step="1" value="0" required></label>
-        <label>Preço (R$) <input name="preco" type="number" min="0" step="0.01" value="0" required></label>
-        <button type="submit">Cadastrar</button>
-      </form>
-    </section>
-
-    <section>
-      <h2>Registrar movimentação</h2>
-      <form id="form-movimentacao">
-        <label>Produto <select name="id" required></select></label>
-        <label>Tipo
-          <select name="tipo">
-            <option value="entrada">Entrada</option>
-            <option value="saida">Saída</option>
-          </select>
-        </label>
-        <label>Quantidade <input name="quantidade" type="number" min="1" step="1" value="1" required></label>
-        <button type="submit">Registrar</button>
-      </form>
-    </section>
-
-    <section>
-      <h2>Produtos</h2>
-      <input id="busca" class="busca" type="search" placeholder="Buscar por nome, código ou categoria..." aria-label="Buscar produto">
-      <div class="tabela">
-        <table>
-          <thead>
-            <tr>
-              <th>Código</th><th>Nome</th><th>Categoria</th><th>Quantidade</th>
-              <th>Mínimo</th><th>Preço</th><th>Situação</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="lista"></tbody>
-        </table>
+  <main id="conteudo">
+    <header class="topo-pagina">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Resumo do estoque e o que precisa de reposição.</p>
       </div>
-    </section>
+      <a class="botao" href="movimentacoes.html">Registrar movimentação</a>
+    </header>
 
-    <section>
-      <h2>Dashboard</h2>
-      <div class="cards">
-        <div class="card"><span>Produtos</span><strong id="r-produtos">-</strong></div>
-        <div class="card"><span>Itens em estoque</span><strong id="r-itens">-</strong></div>
-        <div class="card"><span>Valor do estoque</span><strong id="r-valor">-</strong></div>
-        <div class="card"><span>Abaixo do mínimo</span><strong id="r-alertas">-</strong></div>
-      </div>
-    </section>
+    <dl class="indicadores" aria-label="Resumo do estoque">
+      <div><dt>Produtos cadastrados</dt><dd id="i-produtos">–</dd></div>
+      <div><dt>Itens em estoque</dt><dd id="i-itens">–</dd></div>
+      <div><dt>Valor do estoque</dt><dd id="i-valor">–</dd></div>
+      <div id="i-criticos-bloco"><dt>Abaixo do mínimo</dt><dd id="i-criticos">–</dd></div>
+    </dl>
 
-    <section>
-      <h2>Histórico de movimentações</h2>
-      <div class="tabela">
-        <table>
-          <thead>
-            <tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Saldo após</th></tr>
-          </thead>
-          <tbody id="historico"></tbody>
-        </table>
-      </div>
-    </section>
+    <div class="colunas">
+      <section class="painel repor" id="painel-repor" aria-labelledby="t-repor">
+        <div class="painel-cabecalho">
+          <div>
+            <h2 id="t-repor">Repor estoque</h2>
+            <p>Produtos com quantidade abaixo do mínimo definido.</p>
+          </div>
+        </div>
+        <ul class="lista" id="lista-repor"></ul>
+        <p class="vazio" id="repor-vazio" hidden>Nenhum produto abaixo do mínimo.</p>
+      </section>
+
+      <section class="painel" aria-labelledby="t-ultimas">
+        <div class="painel-cabecalho">
+          <h2 id="t-ultimas">Últimas movimentações</h2>
+          <a href="historico.html">Ver histórico completo</a>
+        </div>
+        <ul class="lista" id="lista-ultimas"></ul>
+        <p class="vazio" id="ultimas-vazio" hidden>Nenhuma movimentação ainda. <a href="movimentacoes.html">Registrar a primeira</a></p>
+      </section>
+    </div>
   </main>
 
-  <script src="app.js"></script>
+  <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="comum.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>

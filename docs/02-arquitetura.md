@@ -10,7 +10,7 @@ O diagrama também está em `arquitetura.svg` (editável) e `arquitetura.png` (p
 
 | Componente | Serviço | O que faz |
 |---|---|---|
-| Interface web | **Cloud Storage** (bucket público) | Guarda e entrega os arquivos do site (`index.html`, `style.css`, `app.js`): telas de cadastro, movimentação, dashboard e histórico. O navegador baixa os arquivos e executa o JavaScript localmente |
+| Interface web | **Cloud Storage** (bucket público) | Guarda e entrega os arquivos do site: quatro páginas HTML (Dashboard, Produtos, Movimentações e Histórico), um CSS e os scripts em JavaScript. O navegador baixa os arquivos e executa o JavaScript localmente |
 | API e regras de negócio | **Cloud Run functions** (`stokei-api`, Python 3.12) | Recebe as requisições HTTP, valida os dados e aplica as regras (saldo não pode ficar negativo, código único, alerta de mínimo, busca, relatório). Responde em JSON |
 | Banco de dados | **Firestore** (modo nativo) | Armazena os produtos (coleção `produtos`) e o histórico (coleção `movimentacoes`) |
 | Identidade da função | **IAM, conta de serviço** `stokei-api` | Identidade com que a função roda. Tem apenas o papel *Cloud Datastore User*, ou seja, só pode ler e gravar no Firestore |
@@ -21,7 +21,7 @@ O diagrama também está em `arquitetura.svg` (editável) e `arquitetura.png` (p
 
 | # | De → Para | Protocolo | Conteúdo |
 |---|---|---|---|
-| ① | Navegador → Cloud Storage | HTTPS (GET) | Baixa `index.html`, `style.css` e `app.js` |
+| ① | Navegador → Cloud Storage | HTTPS (GET) | Baixa as páginas HTML, o CSS e os scripts JS |
 | ② | Navegador ↔ Cloud Run functions | HTTPS + JSON (`fetch`), com CORS liberado só para a origem do site | Requisições da API e respostas |
 | ③ | Cloud Run functions ↔ Firestore | Biblioteca cliente do Google (gRPC sobre TLS), autenticada pela conta de serviço | Leitura e gravação de documentos, em transação |
 | — | Cloud Run functions → Cloud Logging | Automático | Logs e métricas de cada execução |
@@ -62,7 +62,7 @@ sequenceDiagram
     end
     U->>F: GET /produtos, /relatorio, /movimentacoes
     F->>DB: consultas
-    F-->>U: tela atualizada (alerta em vermelho, se abaixo do mínimo)
+    F-->>U: tela atualizada (alerta destacado, se abaixo do mínimo)
 ```
 
 A atualização do saldo e a gravação no histórico acontecem na **mesma transação**. Se uma das duas falhar, nenhuma é gravada. Se duas saídas chegarem ao mesmo tempo, o Firestore garante que uma seja processada depois da outra, já com o saldo atualizado. Assim o estoque nunca fica errado nem negativo.
