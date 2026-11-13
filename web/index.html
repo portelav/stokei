@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stokei</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><h1>Stokei <small>controle de estoque</small></h1></header>
+
+  <main>
+    <div id="mensagem" role="status"></div>
+
+    <section>
+      <h2>Cadastrar produto</h2>
+      <form id="form-produto">
+        <label>Código <input name="codigo" maxlength="30" placeholder="ex.: ARZ-05"></label>
+        <label>Nome <input name="nome" required maxlength="100"></label>
+        <label>Categoria <input name="categoria" maxlength="50" placeholder="ex.: Mercearia"></label>
+        <label>Quantidade <input name="quantidade" type="number" min="0" step="1" value="0" required></label>
+        <label>Mínimo <input name="minimo" type="number" min="0" step="1" value="0" required></label>
+        <label>Preço (R$) <input name="preco" type="number" min="0" step="0.01" value="0" required></label>
+        <button type="submit">Cadastrar</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Registrar movimentação</h2>
+      <form id="form-movimentacao">
+        <label>Produto <select name="id" required></select></label>
+        <label>Tipo
+          <select name="tipo">
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
+        </label>
+        <label>Quantidade <input name="quantidade" type="number" min="1" step="1" value="1" required></label>
+        <button type="submit">Registrar</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Produtos</h2>
+      <input id="busca" class="busca" type="search" placeholder="Buscar por nome, código ou categoria..." aria-label="Buscar produto">
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th><th>Nome</th><th>Categoria</th><th>Quantidade</th>
+              <th>Mínimo</th><th>Preço</th><th>Situação</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="lista"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Dashboard</h2>
+      <div class="cards">
+        <div class="card"><span>Produtos</span><strong id="r-produtos">-</strong></div>
+        <div class="card"><span>Itens em estoque</span><strong id="r-itens">-</strong></div>
+        <div class="card"><span>Valor do estoque</span><strong id="r-valor">-</strong></div>
+        <div class="card"><span>Abaixo do mínimo</span><strong id="r-alertas">-</strong></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Histórico de movimentações</h2>
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Saldo após</th></tr>
+          </thead>
+          <tbody id="historico"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

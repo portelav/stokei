@@ -1,0 +1,58 @@
+Testando http://localhost:8080 em 12/11/2026 22:32:14
+
+--- Teste 1: acesso à API pela internet ---
+GET /produtos -> HTTP 200
+[]
+[OK]    API respondeu (HTTP 200)
+
+--- Teste 2: inserção e armazenamento de dados ---
+POST /produtos -> HTTP 201
+{"id": "p1", "codigo": "TESTE-223214", "nome": "Produto de teste 223214", "categoria": "Testes", "quantidade": 3, "minimo": 5, "preco": 2.5, "alerta": true}
+[OK]    Produto cadastrado (HTTP 201)
+
+id do produto criado: p1
+GET /produtos?busca=Produto%20de%20teste%20223214 -> HTTP 200
+[{"id": "p1", "codigo": "TESTE-223214", "nome": "Produto de teste 223214", "categoria": "Testes", "quantidade": 3, "minimo": 5, "preco": 2.5, "alerta": true}]
+[OK]    Produto recuperado do banco pela busca (HTTP 200)
+
+--- Teste 3: processamento na nuvem (entrada de estoque) ---
+POST /movimentacao -> HTTP 200
+{"id": "p1", "codigo": "TESTE-223214", "nome": "Produto de teste 223214", "categoria": "Testes", "quantidade": 7, "minimo": 5, "preco": 2.5, "alerta": false}
+[OK]    Entrada processada: saldo 3 + 4 = 7 e alerta desligado (7 >= mínimo 5) (HTTP 200)
+
+--- Teste 4: recuperação e apresentação dos resultados ---
+GET /relatorio -> HTTP 200
+{"total_produtos": 1, "total_itens": 7, "valor_total": 17.5, "abaixo_do_minimo": []}
+[OK]    Relatório gerado (HTTP 200)
+
+GET /movimentacoes?produto_id=p1 -> HTTP 200
+[{"produto_id": "p1", "produto_nome": "Produto de teste 223214", "tipo": "entrada", "quantidade": 4, "saldo": 7, "data": "2026-11-13T01:32:15+00:00"}]
+[OK]    Histórico recuperado (HTTP 200)
+
+--- Teste 5: entradas inválidas e falhas simples ---
+POST /movimentacao -> HTTP 400
+{"erro": "Estoque insuficiente: saldo atual 7, saída solicitada 999"}
+[OK]    Saída maior que o saldo foi recusada (HTTP 400)
+
+POST /produtos -> HTTP 400
+{"erro": "'nome' é obrigatório"}
+[OK]    Cadastro com dados inválidos foi recusado (HTTP 400)
+
+POST /produtos -> HTTP 400
+{"erro": "Já existe um produto com o código 'TESTE-223214'"}
+[OK]    Cadastro com código repetido foi recusado (HTTP 400)
+
+POST /movimentacao -> HTTP 404
+{"erro": "Produto não encontrado"}
+[OK]    Movimentação em produto inexistente retornou 404 (HTTP 404)
+
+POST /produtos -> HTTP 400
+{"erro": "Corpo da requisição não é um JSON válido"}
+[OK]    Corpo que não é JSON foi recusado (HTTP 400)
+
+--- Limpeza ---
+DELETE /produtos/p1 -> HTTP 204
+
+[OK]    Produto de teste removido (HTTP 204)
+
+RESULTADO: todos os testes passaram.

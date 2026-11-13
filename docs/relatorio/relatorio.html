@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico — Stokei</title>
+<style>
+  @page { size: A4; margin: 15mm 17mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.42; color: #1a1a1a; margin: 0; }
+  h1 { font-size: 17pt; margin: 0 0 2px; }
+  h2 { font-size: 12pt; margin: 13px 0 5px; padding-bottom: 2px; border-bottom: 1.5px solid #2563eb; color: #1e3a8a; break-after: avoid; }
+  h3 { font-size: 10.5pt; margin: 8px 0 3px; break-after: avoid; }
+  p { margin: 0 0 6px; text-align: justify; }
+  ul { margin: 0 0 6px; padding-left: 18px; }
+  li { margin-bottom: 1px; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0 8px; font-size: 8.8pt; }
+  tr { break-inside: avoid; }
+  th, td { border: 1px solid #cbd5e1; padding: 3px 5px; text-align: left; vertical-align: top; }
+  th { background: #eff6ff; }
+  code { font-family: Consolas, monospace; font-size: 8.6pt; background: #f1f5f9; padding: 0 2px; }
+  figure { margin: 6px 0 8px; text-align: center; break-inside: avoid; }
+  figure img { max-width: 100%; border: 1px solid #e2e8f0; }
+  figcaption { font-size: 8.5pt; color: #475569; margin-top: 2px; }
+  .capa { border: 1.5px solid #1e3a8a; border-radius: 6px; padding: 10px 14px; margin-bottom: 4px; }
+  .capa h2 { margin-top: 0; }
+  .capa .sub { color: #475569; font-size: 10.5pt; margin-bottom: 6px; }
+  .capa table { margin: 0; font-size: 9.5pt; }
+  .capa td { border: none; padding: 1px 4px 1px 0; }
+  .preencher { background: #fff3c4; padding: 0 3px; }
+  .print { border: 1.5px dashed #94a3b8; border-radius: 4px; height: 105px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 9pt; background: #f8fafc; text-align: center; padding: 6px; }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; break-inside: avoid; margin-bottom: 6px; }
+  .lado { display: grid; grid-template-columns: 3fr 1fr; gap: 10px; align-items: start; break-inside: avoid; }
+  .nota { font-size: 8.5pt; color: #475569; }
+</style>
+</head>
+<body>
+
+<div class="capa">
+  <h1>Stokei: controle de estoque na nuvem</h1>
+  <div class="sub">Relatório técnico do Projeto Final de Cloud Computing, UNIMA (Centro Universitário de Maceió)</div>
+  <h2>1. Identificação do grupo</h2>
+  <table>
+    <tr><td style="width:110px"><b>Integrantes:</b></td><td><span class="preencher">Nome 1 (matrícula) · Nome 2 · Nome 3 · Nome 4 · Nome 5</span></td></tr>
+    <tr><td><b>Professor(a):</b></td><td><span class="preencher">nome do professor</span></td></tr>
+    <tr><td><b>Data:</b></td><td><span class="preencher">dd/mm/aaaa</span></td></tr>
+    <tr><td><b>Repositório:</b></td><td><span class="preencher">link do GitHub</span></td></tr>
+  </table>
+</div>
+
+<h2>2. Problema e objetivo da solução</h2>
+<p>Pequenos negócios (mercadinhos, lojas, cantinas) costumam controlar o estoque em caderno ou planilha. Entradas e saídas deixam de ser anotadas e o saldo registrado não bate com o real. O dono só descobre a falta de um produto quando o cliente pede e não sabe quanto dinheiro está parado em mercadoria. Além disso, a planilha fica num único computador: se ele quebrar, os dados se perdem, e não é possível consultar o estoque fora da loja.</p>
+<p><b>Objetivo:</b> oferecer um sistema web, hospedado na nuvem, que centralize o cadastro de produtos e as movimentações e seja acessível de qualquer dispositivo. O sistema deve garantir que o saldo nunca fique inconsistente, avisar automaticamente sobre produtos abaixo do estoque mínimo e gerar um resumo do estoque sem cálculo manual.</p>
+<p><b>Por que nuvem:</b> acesso de qualquer lugar, dados que não dependem de um computador local, custo proporcional ao uso (quase zero para um negócio pequeno) e nenhuma manutenção de servidor.</p>
+
+<h2>3. Descrição das funcionalidades</h2>
+<table>
+  <tr><th style="width:24%">Funcionalidade</th><th>Descrição</th></tr>
+  <tr><td>F1. Cadastro de produtos</td><td>Código (único), nome, categoria, quantidade inicial, estoque mínimo e preço unitário, com validação no servidor.</td></tr>
+  <tr><td>F2. Busca</td><td>Filtro por nome, código ou categoria, sem diferenciar maiúsculas de minúsculas.</td></tr>
+  <tr><td>F3. Entradas e saídas</td><td>Registro de movimentações. Saída maior que o saldo é recusada.</td></tr>
+  <tr><td>F4. Alerta de estoque baixo</td><td>Produto abaixo do mínimo é destacado em vermelho.</td></tr>
+  <tr><td>F5. Dashboard</td><td>Total de produtos, itens em estoque, valor do estoque e quantidade de itens críticos.</td></tr>
+  <tr><td>F6. Histórico</td><td>Últimas movimentações com data, tipo, quantidade e saldo após a operação.</td></tr>
+</table>
+
+<h2>4. Arquitetura da aplicação</h2>
+<figure>
+  <img src="../arquitetura.png" alt="Diagrama de arquitetura do Stokei" style="max-width:92%">
+  <figcaption>Figura 1: Arquitetura do Stokei no Google Cloud.</figcaption>
+</figure>
+<p>O navegador baixa a interface (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>) de um bucket público do <b>Cloud Storage</b> (①). A interface chama a API, publicada no <b>Cloud Run functions</b>, por HTTPS com JSON (②). A função valida os dados, aplica as regras de negócio e lê e grava no <b>Firestore</b> (③). A atualização do saldo e o registro no histórico acontecem numa mesma transação: ou as duas operações são gravadas, ou nenhuma é. A função roda com uma <b>conta de serviço</b> que só tem permissão no Firestore. Logs, métricas e consumo ficam no Cloud Logging/Monitoring e no Faturamento. O navegador nunca acessa o banco diretamente.</p>
+<p>A API expõe seis rotas: <code>GET/POST /produtos</code>, <code>DELETE /produtos/{id}</code>, <code>POST /movimentacao</code>, <code>GET /movimentacoes</code> e <code>GET /relatorio</code>. Erros retornam <code>{"erro": "..."}</code> com status 400 (entrada inválida) ou 404 (produto inexistente).</p>
+
+<h2>5. Serviços utilizados e justificativas</h2>
+<p><b>Restrição encontrada:</b> o enunciado pede o Microsoft Azure. A assinatura acadêmica da instituição é restrita aos estudantes de Medicina, e o cadastro de uma conta própria exigiu o CCM (inscrição municipal de empresa), que os integrantes não possuem. A AWS, autorizada verbalmente pelo professor como alternativa, também não permitiu criar a conta. Por isso a solução usa o <b>Google Cloud</b>, que oferece os mesmos tipos de serviço. A tabela indica o equivalente no Azure de cada serviço.</p>
+<table>
+  <tr><th style="width:17%">Serviço</th><th>Uso e justificativa</th><th style="width:10%">Modelo</th><th style="width:15%">Equivalente Azure</th></tr>
+  <tr><td>Projeto Google Cloud</td><td>Agrupa recursos, permissões e faturamento, e permite excluir tudo de uma vez ao final (R1).</td><td>—</td><td>Resource Group</td></tr>
+  <tr><td>Firestore</td><td>Armazena produtos e histórico (R2). É um banco NoSQL gerenciado, com cota gratuita diária e transações que garantem saldo correto mesmo com operações simultâneas. O Cloud SQL foi descartado por não ter cota gratuita.</td><td>PaaS</td><td>Table Storage / Cosmos DB</td></tr>
+  <tr><td>Cloud Run functions</td><td>API e regras de negócio (R3). Serverless: só executa (e só cobra) quando recebe requisições e escala automaticamente. Uma máquina virtual (IaaS) foi descartada porque ficaria ligada 24h e exigiria manter o sistema operacional.</td><td>PaaS (FaaS)</td><td>Azure Functions</td></tr>
+  <tr><td>Cloud Storage</td><td>Hospeda os arquivos do site, sem servidor web e com custo praticamente zero.</td><td>PaaS</td><td>Blob Storage</td></tr>
+  <tr><td>IAM, Logging, Faturamento</td><td>Conta de serviço com permissão mínima, logs e métricas da função e orçamento com alertas (R6).</td><td>SaaS (gestão)</td><td>Entra ID, Monitor, Cost Mgmt.</td></tr>
+</table>
+<p><b>Modelos de serviço:</b> o modelo predominante é o <b>PaaS</b>. O grupo entrega apenas código, dados e arquivos, e servidor, sistema operacional, runtime e escala ficam com o provedor. Não foi usado <b>IaaS</b>, que exigiria uma máquina virtual administrada pelo grupo. Do ponto de vista do dono do negócio, o próprio Stokei é um <b>SaaS</b>: ele usa o sistema pelo navegador, sem instalar nada.</p>
+
+<h2>6. Tecnologias e linguagens empregadas</h2>
+<ul>
+  <li><b>Back-end:</b> Python 3.12, Functions Framework (Google, sobre Flask) e a biblioteca oficial <code>google-cloud-firestore</code>.</li>
+  <li><b>Front-end:</b> HTML, CSS e JavaScript puros (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>), sem framework e sem etapa de build. Layout responsivo para computador e celular.</li>
+  <li><b>Testes:</b> pytest (58 testes automatizados) e um script Bash/curl com os testes exigidos (<code>scripts/testar-api.sh</code>).</li>
+  <li><b>Implantação:</b> console do Google Cloud e gcloud CLI no Cloud Shell (<code>scripts/deploy.sh</code>).</li>
+  <li><b>Organização do código:</b> as regras de negócio (<code>estoque.py</code>) ficam separadas das rotas (<code>main.py</code>) e do acesso ao banco (repositório Firestore). Isso permitiu testar toda a lógica sem depender da nuvem.</li>
+</ul>
+
+<h2>7. Evidências da implementação e dos testes</h2>
+<div class="lado">
+  <figure style="margin:0">
+    <img src="../evidencias/tela-sistema.png" alt="Tela do Stokei no computador">
+    <figcaption>Figura 2: Tela do sistema, com dois produtos abaixo do mínimo (em vermelho), dashboard e histórico.</figcaption>
+  </figure>
+  <figure style="margin:0">
+    <img src="../evidencias/tela-celular.png" alt="Tela do Stokei no celular" style="max-height:300px">
+    <figcaption>Figura 3: Layout no celular.</figcaption>
+  </figure>
+</div>
+<table>
+  <tr><th style="width:27%">Teste exigido</th><th>Como foi verificado</th><th style="width:18%">Resultado</th></tr>
+  <tr><td>1. Acesso pela internet</td><td><code>GET /produtos</code> e abertura da URL pública do site</td><td>HTTP 200 ✔</td></tr>
+  <tr><td>2. Inserção e armazenamento</td><td><code>POST /produtos</code>, recuperação pela busca e conferência do documento no console do Firestore</td><td>HTTP 201 ✔</td></tr>
+  <tr><td>3. Processamento na nuvem</td><td>Entrada de 4 unidades num produto com saldo 3 e mínimo 5: o saldo vai a 7 e o alerta é desligado</td><td>HTTP 200 ✔</td></tr>
+  <tr><td>4. Recuperação dos resultados</td><td><code>GET /relatorio</code>, <code>GET /movimentacoes</code> e a tela do sistema</td><td>HTTP 200 ✔</td></tr>
+  <tr><td>5. Entrada inválida / falha</td><td>Saída de 999 unidades, nome vazio, código repetido, produto inexistente, corpo não-JSON</td><td>400/400/400/404/400 ✔</td></tr>
+</table>
+<p>Todos os testes passaram (12 de 12 verificações, incluindo a remoção do produto de teste), assim como os 58 testes automatizados. Os registros completos estão em <code>docs/evidencias/</code>. <span class="preencher">Após o deploy: substituir os quadros abaixo pelos prints do console e citar a execução do <code>testar-api.sh</code> contra a URL da nuvem.</span></p>
+<div class="duas">
+  <div class="print">[inserir print]<br>Firestore com documentos nas coleções produtos e movimentacoes</div>
+  <div class="print">[inserir print]<br>Cloud Run: função stokei-api implantada (URL, métricas ou logs)</div>
+</div>
+
+<h2>8. Segurança, consumo e estimativa de custos</h2>
+<h3>Segurança</h3>
+<ul>
+  <li><b>Nenhuma credencial no código ou no repositório.</b> A função se autentica no Firestore pela conta de serviço <code>stokei-api</code>, com o papel mínimo <i>Cloud Datastore User</i>.</li>
+  <li><b>Banco fechado.</b> O Firestore fica em modo de produção, sem acesso direto pela internet; só a função lê e grava.</li>
+  <li><b>Comunicação criptografada</b> (HTTPS/TLS) e <b>CORS</b> liberado apenas para a origem do site.</li>
+  <li><b>Validação de toda entrada no servidor</b> e <b>proteção contra XSS</b> na interface (uso de <code>textContent</code>).</li>
+  <li><b>Acesso ao projeto pelo IAM:</b> apenas os integrantes do grupo, com o papel Editor.</li>
+  <li><b>Limitação conhecida:</b> não há login de usuário, então quem tiver a URL pode alterar o estoque. Para uso real, seria necessário adicionar autenticação.</li>
+</ul>
+<h3>Consumo e custos</h3>
+<p>O consumo é acompanhado pelas métricas do Cloud Run (requisições, latência, erros) e pelo Faturamento. Há um orçamento de R$ 10 com alertas em 50%, 90% e 100%, e a função é limitada a 2 instâncias para evitar escala inesperada.</p>
+<table>
+  <tr><th style="width:18%">Serviço</th><th>Cota gratuita (referência)</th><th>Uso no projeto</th><th style="width:14%">Custo estimado</th></tr>
+  <tr><td>Cloud Run functions</td><td>2 milhões de requisições/mês, 180 mil vCPU-s e 360 mil GiB-s</td><td>Algumas centenas de requisições</td><td>US$ 0</td></tr>
+  <tr><td>Firestore</td><td>1 GiB armazenado; 50 mil leituras, 20 mil gravações e 20 mil exclusões por dia</td><td>Poucos KB; centenas de leituras/dia</td><td>US$ 0</td></tr>
+  <tr><td>Cloud Storage</td><td>5 GB grátis apenas em regiões dos EUA; em São Paulo, cobrança por GB</td><td>3 arquivos, cerca de 20 KB</td><td>&lt; US$ 0,01</td></tr>
+  <tr><td>Cloud Build / Artifact Registry</td><td>Minutos de build gratuitos; 0,5 GB de armazenamento de imagens</td><td>Alguns builds; 1 imagem</td><td>≈ US$ 0 a 0,10</td></tr>
+  <tr><td>Cloud Logging</td><td>50 GiB/mês por projeto</td><td>Poucos MB</td><td>US$ 0</td></tr>
+</table>
+<p><b>Estimativa para o projeto:</b> praticamente <b>US$ 0/mês</b>, coberto pelas cotas gratuitas e pelo crédito do teste gratuito. <b>Para um pequeno negócio real</b> (cerca de 100 produtos e 300 atualizações de tela por dia), cada atualização lê os produtos duas vezes (lista e relatório) mais o histórico, algo em torno de 50 mil leituras por dia, no limite da cota gratuita. O excedente custaria poucos centavos de dólar por dia, o que dá uma ordem de grandeza de <b>até alguns reais por mês</b>. <span class="nota">Valores de referência das cotas publicadas pelo Google; os preços variam por região e devem ser conferidos na Calculadora de Preços do Google Cloud.</span></p>
+
+<h2>9. Conclusão, dificuldades e possíveis melhorias</h2>
+<p>O Stokei atende aos requisitos do projeto:</p>
+<ul>
+  <li><b>R1:</b> recursos organizados num projeto de nuvem.</li>
+  <li><b>R2:</b> armazenamento persistente no Firestore, com gravação e recuperação demonstradas.</li>
+  <li><b>R3:</b> processamento na nuvem (validação, controle de saldo, código único, alertas, busca e relatório) no Cloud Run functions.</li>
+  <li><b>R4:</b> aplicação web acessível pela internet.</li>
+  <li><b>R5:</b> integração entre armazenamento e processamento.</li>
+  <li><b>R6:</b> segurança e controle de custos.</li>
+</ul>
+<p>O uso de serviços gerenciados (PaaS/serverless) mostrou na prática a principal vantagem da nuvem para um sistema pequeno: o grupo se concentrou no código e nos dados, sem administrar servidor, e o custo acompanha o uso.</p>
+<p><b>Dificuldades:</b> a principal foi obter uma conta de nuvem. A assinatura Azure da instituição atende só a Medicina, o cadastro próprio no Azure exigiu CCM e não foi possível criar conta na AWS. Isso levou à adoção do Google Cloud, com uma arquitetura equivalente à pedida no enunciado. <span class="preencher">Acrescentar outras dificuldades que o grupo enfrentou.</span></p>
+<p><b>Possíveis melhorias:</b></p>
+<ul>
+  <li>autenticação de usuários (Firebase Authentication)</li>
+  <li>edição de produtos</li>
+  <li>paginação do histórico</li>
+  <li>relatório com menos leituras no banco (totais pré-calculados)</li>
+  <li>exportação do relatório em PDF/CSV</li>
+  <li>alertas por e-mail quando um produto atingir o mínimo</li>
+</ul>
+
+</body>
+</html>

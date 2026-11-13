@@ -1,0 +1,11 @@
+﻿.env
+.env.*
+local.settings.json
+node_modules/
+__pycache__/
+.venv/
+*.log
+.pytest_cache/
+
+# ZIP gerado para enviar o servidor de teste
+servidor-teste.zip

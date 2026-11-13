@@ -1,0 +1,94 @@
+:root {
+  --bg: #f5f6f8;
+  --card: #fff;
+  --text: #1d2330;
+  --muted: #667085;
+  --border: #e2e5ea;
+  --primary: #2563eb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --ok: #16a34a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px; }
+header h1 { margin: 0 auto; max-width: 1000px; font-size: 20px; }
+header small { font-size: 13px; font-weight: 400; color: var(--muted); }
+
+main { max-width: 1000px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+
+section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 0; /* deixa o bloco encolher no celular */
+}
+
+h2 { margin: 0 0 12px; font-size: 16px; }
+
+/* Formulários */
+form { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 140px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+input, select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+form button { flex: 0 0 auto; }
+button.secundario { background: transparent; color: var(--danger); padding: 4px 8px; }
+
+.busca { width: 100%; max-width: 320px; margin-bottom: 12px; }
+
+/* Tabelas: rolam na horizontal dentro do bloco em telas pequenas */
+.tabela { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+td.codigo { font-family: ui-monospace, Consolas, monospace; font-size: 13px; color: var(--muted); }
+
+/* Alerta de estoque baixo */
+tr.alerta td { background: var(--danger-bg); }
+.tag { font-size: 12px; font-weight: 600; }
+.tag.alerta { color: var(--danger); }
+.tag.ok { color: var(--ok); }
+
+/* Dashboard */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.card { border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+.card span { display: block; font-size: 12px; color: var(--muted); }
+.card strong { font-size: 20px; }
+
+/* Mensagens de sucesso e erro */
+#mensagem { font-size: 14px; padding: 10px 12px; border-radius: 6px; }
+#mensagem:empty { display: none; }
+#mensagem.erro { color: var(--danger); background: var(--danger-bg); }
+#mensagem.sucesso { color: var(--ok); background: #f0fdf4; }
