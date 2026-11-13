@@ -9,7 +9,7 @@ O script `scripts/testar-api.sh` executa todos os testes abaixo e marca cada um 
 | 1 | Acesso à aplicação ou API pela internet | `GET /produtos`. Na nuvem, abrir também a URL pública do site | HTTP 200 | ✅ | ☐ |
 | 2 | Inserção e armazenamento de dados | `POST /produtos` e depois `GET /produtos?busca=` para recuperar o que foi gravado. Na nuvem, conferir o documento no console do Firestore | 201, e o produto aparece na busca | ✅ | ☐ |
 | 3 | Processamento executado na nuvem | `POST /movimentacao` com entrada de 4 num produto com saldo 3 e mínimo 5 | 200, saldo 7, alerta desligado | ✅ | ☐ |
-| 4 | Recuperação e apresentação dos resultados | `GET /relatorio` e `GET /movimentacoes`; na interface, Dashboard e Histórico | 200, com totais e histórico corretos | ✅ | ☐ |
+| 4 | Recuperação e apresentação dos resultados | `GET /relatorio` e `GET /movimentacoes`; na interface, Dashboard e Histórico | 200, com totais e histórico corretos | ✅ | ✅ | ☐ |
 | 5 | Comportamento com entrada inválida ou falha simples | Saída de 999 unidades, cadastro com nome vazio, código repetido, produto inexistente, corpo que não é JSON | 400, 400, 400, 404, 400, sem alterar dados | ✅ | ☐ |
 
 Saída completa da execução local: [`evidencias/testes-api-local.txt`](evidencias/testes-api-local.txt). Resultado: **12 de 12 verificações OK** (11 testes e a remoção do produto de teste).
@@ -30,7 +30,7 @@ Saída completa: [`evidencias/testes-unitarios.txt`](evidencias/testes-unitarios
 
 ## Testes da interface
 
-Cada funcionalidade é verificada pela interface, independentemente do layout. Os prints ficam em `docs/evidencias/` e serão refeitos após a reformulação visual do site.
+Cada funcionalidade é verificada pela interface, independentemente do layout. A coluna "Local" foi verificada em 12/11/2026 no navegador, com a API rodando no computador (dados em memória); os prints estão em `docs/evidencias/tela-sistema.png` e `tela-celular.png`. A coluna "Nuvem" deve ser marcada repetindo os testes no site publicado.
 
 **Dados de exemplo** (para os resultados abaixo baterem):
 
@@ -42,17 +42,17 @@ Cada funcionalidade é verificada pela interface, independentemente do layout. O
 | ACU-01 | Açúcar 1kg | Mercearia | 2 | 8 | 4,79 | — |
 | OLE-900 | Óleo de soja 900ml | Mercearia | 12 | 6 | 7,99 | saída de 2 |
 
-| Área | Funcionalidade | Como testar | Resultado esperado | Print |
-|---|---|---|---|---|
-| Dashboard | F5. Resumo | Abrir o sistema com os dados de exemplo | 5 produtos, 58 itens, R$ 1.122,44, 2 abaixo do mínimo | ☐ |
-| Dashboard | F4. Alerta | Conferir os itens críticos | Açúcar (2/8) e Feijão (4/10) | ☐ |
-| Produtos | F1. Cadastro | Cadastrar "LEI-01 · Leite integral 1L", quantidade 3, mínimo 6 | O produto aparece na lista, destacado como abaixo do mínimo | ☐ |
-| Produtos | F1. Código repetido | Cadastrar outro produto com código "lei-01" | Mensagem de erro da API; nenhum produto novo | ☐ |
-| Produtos | F2. Busca | Buscar "merc", depois "CAF" | Primeiro os 4 produtos da Mercearia, depois só o Café | ☐ |
-| Movimentações | F3. Entrada | Entrada de 5 no Leite | Saldo 8; o Leite deixa de estar em alerta | ☐ |
-| Movimentações | F3. Saída inválida | Saída de 100 no Leite | Mensagem "Estoque insuficiente"; saldo continua 8 | ☐ |
-| Histórico | F6. Histórico | Abrir após as movimentações | Movimentações mais recentes primeiro, com o saldo após cada uma | ☐ |
-| Todas | Celular | Repetir a navegação numa tela de celular | Todas as áreas utilizáveis, sem conteúdo cortado | ☐ |
+| Área | Funcionalidade | Como testar | Resultado esperado | Local | Nuvem |
+|---|---|---|---|---|---|
+| Dashboard | F5. Resumo | Abrir o sistema com os dados de exemplo | 5 produtos, 58 itens, R$ 1.122,44, 2 abaixo do mínimo | ✅ | ☐ |
+| Dashboard | F4. Alerta | Conferir os itens críticos | Açúcar (2/8) e Feijão (4/10) | ✅ | ☐ |
+| Produtos | F1. Cadastro | Cadastrar "LEI-01 · Leite integral 1L", quantidade 3, mínimo 6 | O produto aparece na lista, destacado como abaixo do mínimo | ✅ | ☐ |
+| Produtos | F1. Código repetido | Cadastrar outro produto com código "lei-01" | Mensagem de erro da API; nenhum produto novo | ✅ | ☐ |
+| Produtos | F2. Busca | Buscar "merc", depois "CAF" | Primeiro os 4 produtos da Mercearia, depois só o Café | ✅ | ☐ |
+| Movimentações | F3. Entrada | Entrada de 5 no Leite | Saldo 8; o Leite deixa de estar em alerta | ✅ | ☐ |
+| Movimentações | F3. Saída inválida | Saída de 100 no Leite | Mensagem "Estoque insuficiente"; saldo continua 8 | ✅ | ☐ |
+| Histórico | F6. Histórico | Abrir após as movimentações | Movimentações mais recentes primeiro, com o saldo após cada uma | ✅ | ☐ |
+| Todas | Celular | Repetir a navegação numa tela de celular | Todas as áreas utilizáveis, sem conteúdo cortado | ✅ | ☐ |
 
 Os valores esperados foram conferidos pela API com os mesmos dados (`GET /relatorio`: 5 produtos, 58 itens, R$ 1.122,44, 2 abaixo do mínimo).
 
@@ -60,7 +60,7 @@ Os valores esperados foram conferidos pela API com os mesmos dados (`GET /relato
 
 - Todas as regras de negócio funcionam como planejado: o saldo nunca fica negativo, o alerta acende e apaga conforme o mínimo e o relatório bate com a soma manual.
 - Toda entrada inválida testada foi recusada com mensagem clara, sem alterar os dados.
-- A interface será validada pela tabela acima, com prints, após a reformulação visual.
+- Todos os testes da interface passaram localmente; falta repeti-los no site publicado na nuvem.
 
 ## Limitações conhecidas
 

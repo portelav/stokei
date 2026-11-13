@@ -68,7 +68,7 @@
   <img src="../arquitetura.png" alt="Diagrama de arquitetura do Stokei" style="max-width:92%">
   <figcaption>Figura 1: Arquitetura do Stokei no Google Cloud.</figcaption>
 </figure>
-<p>O navegador baixa a interface (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>) de um bucket público do <b>Cloud Storage</b> (①). A interface chama a API, publicada no <b>Cloud Run functions</b>, por HTTPS com JSON (②). A função valida os dados, aplica as regras de negócio e lê e grava no <b>Firestore</b> (③). A atualização do saldo e o registro no histórico acontecem numa mesma transação: ou as duas operações são gravadas, ou nenhuma é. A função roda com uma <b>conta de serviço</b> que só tem permissão no Firestore. Logs, métricas e consumo ficam no Cloud Logging/Monitoring e no Faturamento. O navegador nunca acessa o banco diretamente.</p>
+<p>O navegador baixa a interface (quatro páginas HTML, um CSS e os scripts JS) de um bucket público do <b>Cloud Storage</b> (①). A interface chama a API, publicada no <b>Cloud Run functions</b>, por HTTPS com JSON (②). A função valida os dados, aplica as regras de negócio e lê e grava no <b>Firestore</b> (③). A atualização do saldo e o registro no histórico acontecem numa mesma transação: ou as duas operações são gravadas, ou nenhuma é. A função roda com uma <b>conta de serviço</b> que só tem permissão no Firestore. Logs, métricas e consumo ficam no Cloud Logging/Monitoring e no Faturamento. O navegador nunca acessa o banco diretamente.</p>
 <p>A API expõe seis rotas: <code>GET/POST /produtos</code>, <code>DELETE /produtos/{id}</code>, <code>POST /movimentacao</code>, <code>GET /movimentacoes</code> e <code>GET /relatorio</code>. Erros retornam <code>{"erro": "..."}</code> com status 400 (entrada inválida) ou 404 (produto inexistente).</p>
 
 <h2>5. Serviços utilizados e justificativas</h2>
@@ -86,7 +86,7 @@
 <h2>6. Tecnologias e linguagens empregadas</h2>
 <ul>
   <li><b>Back-end:</b> Python 3.12, Functions Framework (Google, sobre Flask) e a biblioteca oficial <code>google-cloud-firestore</code>.</li>
-  <li><b>Front-end:</b> HTML, CSS e JavaScript puros (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>), sem framework e sem etapa de build. Layout responsivo para computador e celular.</li>
+  <li><b>Front-end:</b> HTML, CSS e JavaScript puros, em quatro páginas (Dashboard, Produtos, Movimentações e Histórico), sem framework e sem etapa de build. Layout responsivo para computador e celular.</li>
   <li><b>Testes:</b> pytest (58 testes automatizados) e um script Bash/curl com os testes exigidos (<code>scripts/testar-api.sh</code>).</li>
   <li><b>Implantação:</b> console do Google Cloud e gcloud CLI no Cloud Shell (<code>scripts/deploy.sh</code>).</li>
   <li><b>Organização do código:</b> as regras de negócio (<code>estoque.py</code>) ficam separadas das rotas (<code>main.py</code>) e do acesso ao banco (repositório Firestore). Isso permitiu testar toda a lógica sem depender da nuvem.</li>
@@ -133,7 +133,7 @@
   <tr><th style="width:18%">Serviço</th><th>Cota gratuita (referência)</th><th>Uso no projeto</th><th style="width:14%">Custo estimado</th></tr>
   <tr><td>Cloud Run functions</td><td>2 milhões de requisições/mês, 180 mil vCPU-s e 360 mil GiB-s</td><td>Algumas centenas de requisições</td><td>US$ 0</td></tr>
   <tr><td>Firestore</td><td>1 GiB armazenado; 50 mil leituras, 20 mil gravações e 20 mil exclusões por dia</td><td>Poucos KB; centenas de leituras/dia</td><td>US$ 0</td></tr>
-  <tr><td>Cloud Storage</td><td>5 GB grátis apenas em regiões dos EUA; em São Paulo, cobrança por GB</td><td>3 arquivos, cerca de 20 KB</td><td>&lt; US$ 0,01</td></tr>
+  <tr><td>Cloud Storage</td><td>5 GB grátis apenas em regiões dos EUA; em São Paulo, cobrança por GB</td><td>11 arquivos, cerca de 55 KB</td><td>&lt; US$ 0,01</td></tr>
   <tr><td>Cloud Build / Artifact Registry</td><td>Minutos de build gratuitos; 0,5 GB de armazenamento de imagens</td><td>Alguns builds; 1 imagem</td><td>≈ US$ 0 a 0,10</td></tr>
   <tr><td>Cloud Logging</td><td>50 GiB/mês por projeto</td><td>Poucos MB</td><td>US$ 0</td></tr>
 </table>

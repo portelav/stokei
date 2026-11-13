@@ -88,7 +88,7 @@ As coleções `produtos` e `movimentacoes` são criadas sozinhas na primeira gra
 6. Faça **upload** de todos os arquivos da pasta `web/` para o bucket: as páginas `.html`, o `style.css` e os scripts `.js`.
 7. Abra `https://storage.googleapis.com/<ID-do-projeto>-stokei-web/index.html`.
 
-📸 **Print 9:** bucket com os 3 arquivos do site e a permissão `allUsers` como leitor.
+📸 **Print 9:** bucket com os arquivos do site (páginas `.html`, `style.css` e scripts `.js`) e a permissão `allUsers` como leitor.
 📸 **Print 10:** o sistema aberto pela URL pública, com dados cadastrados.
 
 ### Passo 7: Conferir que os dados estão na nuvem
@@ -115,7 +115,7 @@ As coleções `produtos` e `movimentacoes` são criadas sozinhas na primeira gra
 No console, clique no ícone **Ativar Cloud Shell** (`>_`, no topo) e rode:
 
 ```
-git clone <url-do-repositorio> stokei
+git clone https://github.com/portelav/stokei.git stokei
 cd stokei
 bash scripts/deploy.sh <ID-do-projeto>
 ```
