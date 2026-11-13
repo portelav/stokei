@@ -42,6 +42,7 @@ api/                       API (Python 3.12, Cloud Run functions)
   estoque.py               regras de negócio (funções puras)
   memoria.py               repositório em memória (testes e execução local)
   tests/                   58 testes (pytest)
+  Dockerfile               imagem da API para o Cloud Run (alternativa ao deploy como função)
 web/                       site (HTML, CSS e JS puros)
   index.html               Dashboard
   produtos.html            cadastro, busca e lista de produtos
@@ -54,6 +55,7 @@ web/                       site (HTML, CSS e JS puros)
 scripts/
   deploy.sh                cria a infraestrutura e publica (Cloud Shell)
   testar-api.sh            executa os testes da Etapa 5 contra a API
+servidor-teste/            servidor Flask mínimo para testar a configuração do Google Cloud (com Dockerfile)
 docs/                      documentação das etapas, diagrama, evidências e relatório
 ```
 

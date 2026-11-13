@@ -21,6 +21,8 @@ python app.py
 
 Abra http://localhost:8080.
 
+Com Docker: `docker build -t stokei-teste .` e `docker run --rm -p 8080:8080 stokei-teste`.
+
 ## Publicar no Cloud Run (pelo Cloud Shell)
 
 Troque `SEU_PROJETO` pelo ID do projeto:
@@ -32,6 +34,7 @@ gcloud run deploy stokei-teste --source . --region southamerica-east1 \
     --allow-unauthenticated --max-instances 1
 ```
 
+- Como a pasta tem um `Dockerfile`, o Cloud Build usa ele para montar a imagem.
 - Se o comando perguntar se pode ativar APIs ou criar um repositório no Artifact Registry, responda `Y`.
 - No fim, ele mostra a URL do serviço (`https://stokei-teste-....run.app`). Abra essa URL: a página deve mostrar "Servidor funcionando" e o campo `servico` igual a `stokei-teste`.
 - Os logs ficam em *Cloud Run → stokei-teste → Logs*. Cada acesso à página gera a linha "Acesso à página inicial".

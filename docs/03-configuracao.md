@@ -132,6 +132,55 @@ bash scripts/testar-api.sh <URL-da-API>
 
 ---
 
+## Caminho C: API em contêiner (Cloud Run com Docker)
+
+Alternativa ao Passo 5 para quem preferir publicar a API como **serviço do Cloud Run** a partir de um contêiner. O `api/Dockerfile` empacota o mesmo código. Os Passos 1 a 4 e o 6 continuam iguais.
+
+No Cloud Shell, dentro da pasta `api/` do repositório:
+
+```
+gcloud run deploy stokei-api --source . --region southamerica-east1 \
+    --allow-unauthenticated --max-instances 2 \
+    --service-account stokei-api@<ID-do-projeto>.iam.gserviceaccount.com \
+    --set-env-vars ALLOWED_ORIGIN=https://storage.googleapis.com
+```
+
+O Cloud Build monta a imagem a partir do `Dockerfile` e o Cloud Run a publica. No final aparece a URL do serviço. Depois:
+
+1. Em `web/config.js`, troque o `API_URL` por essa URL.
+2. Envie os arquivos de `web/` para o bucket:
+   ```
+   gcloud storage cp web/*.html web/*.css web/*.js gs://<ID-do-projeto>-stokei-web/ --cache-control=no-cache
+   ```
+
+Para testar a imagem no computador, com Docker instalado: `docker build -t stokei-api .` e `docker run --rm -p 8080:8080 -e STOKEI_MEMORIA=1 stokei-api`.
+
+O `scripts/deploy.sh` continua usando o Cloud Run functions (Passo 5). Usem só um dos dois caminhos para a API.
+
+---
+
+## Se der erro no deploy
+
+| Mensagem (ou parecida) | Causa provável | O que fazer |
+|---|---|---|
+| `Billing account for project ... is not found` ou `billing is not enabled` | Projeto sem conta de faturamento vinculada | *Faturamento → Vincular uma conta de faturamento* ao projeto e rodar de novo |
+| `PERMISSION_DENIED ... setIamPolicy` | Quem está rodando não é Proprietário (*Owner*) do projeto | Rodar o script com a conta que criou o projeto, ou pedir o papel Proprietário |
+| `API ... has not been used in project ... or it is disabled` logo depois de ativar as APIs | As APIs levam um ou dois minutos para ficar ativas | Esperar e rodar o script de novo; ele aproveita o que já foi criado |
+| Build falha com `missing permission on the build service account` | A conta usada pelo Cloud Build não tem o papel de build | Conceder o papel e rodar de novo (comandos abaixo) |
+| `public access prevention` ao liberar `allUsers` no bucket | Prevenção de acesso público ativa no bucket | `gcloud storage buckets update gs://<ID-do-projeto>-stokei-web --no-public-access-prevention` |
+| Site abre, mas mostra "API fora do ar" | Endereço da API errado no `config.js`, ou cache do navegador | Conferir o `API_URL` no bucket e recarregar com Ctrl+F5 |
+
+Comandos para o erro de build:
+
+```
+NUM=$(gcloud projects describe <ID-do-projeto> --format='value(projectNumber)')
+gcloud projects add-iam-policy-binding <ID-do-projeto> \
+    --member="serviceAccount:${NUM}-compute@developer.gserviceaccount.com" \
+    --role=roles/cloudbuild.builds.builder
+```
+
+---
+
 ## Checklist de evidências (entregável C)
 
 - [ ] 1. Projeto criado
