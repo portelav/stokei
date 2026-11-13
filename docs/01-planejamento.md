@@ -41,10 +41,10 @@ Arquitetura planejada no **Google Cloud** (ver "Restrições" para o motivo de n
 |---|---|---|---|
 | **Projeto do Google Cloud** | Agrupa todos os recursos, permissões e faturamento | Cumpre o papel do Resource Group exigido no R1. Centraliza permissões e custos e permite apagar tudo de uma vez ao final | Resource Group |
 | **Firestore** | Armazena os produtos e o histórico de movimentações | Banco NoSQL gerenciado, sem servidor para administrar, com cota gratuita diária. Suporta transações, o que garante saldo correto mesmo com operações simultâneas (R2) | Table Storage / Cosmos DB |
-| **Cloud Run functions** | API HTTP e regras de negócio: validação, controle de saldo, alertas, relatório e busca | Serverless: só executa (e só cobra) quando recebe requisições, escala automaticamente e a cota gratuita mensal cobre o projeto (R3) | Azure Functions |
-| **Cloud Storage** | Hospeda a interface web (HTML, CSS e JS) | Serve a página direto do bucket, sem servidor web, com custo praticamente zero | Blob Storage (site estático) |
+| **Cloud Run** | Roda o contêiner do Stokei, que entrega a interface web (HTML, CSS e JS) e a API com as regras de negócio: validação, controle de saldo, alertas, relatório e busca | Serverless: só executa (e só cobra) quando recebe requisições, escala automaticamente e a cota gratuita mensal cobre o projeto (R3). Um contêiner só, montado a partir de um `Dockerfile`, simplifica o deploy: uma URL para o site e a API | Azure Container Apps / App Service |
+| **Cloud Build e Artifact Registry** | Montam a imagem do contêiner a partir do `Dockerfile` e a guardam | Usados só no deploy; o `gcloud run deploy` aciona os dois automaticamente | Azure Container Registry |
 
-Integração entre os serviços (R5): a função lê e grava no Firestore a cada operação feita pela interface. Ela se autentica por uma conta de serviço com permissão apenas no Firestore, sem senha ou chave no código.
+Integração entre os serviços (R5): o serviço do Cloud Run lê e grava no Firestore a cada operação feita pela interface. Ele se autentica por uma conta de serviço com permissão apenas no Firestore, sem senha ou chave no código.
 
 ## Por que usar nuvem
 

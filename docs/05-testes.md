@@ -12,19 +12,19 @@ O script `scripts/testar-api.sh` executa todos os testes abaixo e marca cada um 
 | 4 | Recuperação e apresentação dos resultados | `GET /relatorio` e `GET /movimentacoes`; na interface, Dashboard e Histórico | 200, com totais e histórico corretos | ✅ | ✅ | ☐ |
 | 5 | Comportamento com entrada inválida ou falha simples | Saída de 999 unidades, cadastro com nome vazio, código repetido, produto inexistente, corpo que não é JSON | 400, 400, 400, 404, 400, sem alterar dados | ✅ | ☐ |
 
-Saída completa da execução local: [`evidencias/testes-api-local.txt`](evidencias/testes-api-local.txt). Resultado: **12 de 12 verificações OK** (11 testes e a remoção do produto de teste).
+Saída completa da execução local, contra o contêiner Docker do Stokei rodando no computador com os dados em memória: [`evidencias/testes-api-local.txt`](evidencias/testes-api-local.txt). Resultado: **12 de 12 verificações OK** (11 testes e a remoção do produto de teste).
 
-Depois do deploy, rodem `bash scripts/testar-api.sh <URL-da-API>` no Cloud Shell, salvem o print e marquem a coluna "Nuvem".
+Depois do deploy, rodem `bash scripts/testar-api.sh <URL-do-serviço>` no Cloud Shell, salvem o print e marquem a coluna "Nuvem".
 
 ## Testes automatizados
 
-Além dos testes de ponta a ponta, o projeto tem **58 testes automatizados** (pytest), todos passando:
+Além dos testes de ponta a ponta, o projeto tem **64 testes automatizados** (pytest), todos passando:
 
 | Arquivo | Testes | O que cobre |
 |---|---|---|
 | `test_estoque.py` | 40 | Validação de produto (16 casos de entrada inválida), código único, entrada e saída, bloqueio de saldo negativo, busca por nome/código/categoria, alerta e relatório |
 | `test_rotas.py` | 14 | Cada rota da API, inclusive os erros 400 e 404 e o código duplicado |
-| `test_http.py` | 4 | Requisições HTTP reais: CORS (*preflight*), JSON válido e inválido, DELETE |
+| `test_http.py` | 10 | Requisições HTTP reais: CORS (*preflight*), JSON válido e inválido, DELETE e entrega das páginas do site (inclusive bloqueio de caminhos fora da pasta) |
 
 Saída completa: [`evidencias/testes-unitarios.txt`](evidencias/testes-unitarios.txt).
 

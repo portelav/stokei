@@ -4,12 +4,13 @@
 
 | Camada | Tecnologia | Por quê |
 |---|---|---|
-| Linguagem do back-end | **Python 3.12** | Linguagem que o grupo domina, com suporte nativo no Cloud Run functions |
-| Framework HTTP | **Functions Framework** (Google), sobre Flask | É o padrão do Google para funções em Python. O mesmo código roda local e na nuvem |
+| Linguagem do back-end | **Python 3.12** | Linguagem que o grupo domina, com imagem oficial (`python:3.12-slim`) para o contêiner |
+| Framework HTTP | **Functions Framework** (Google), sobre Flask | Servidor HTTP leve do Google para Python. O mesmo código roda local, no Docker e no Cloud Run |
 | Banco | **google-cloud-firestore** (biblioteca oficial) | Acesso ao Firestore com transações e autenticação automática pela conta de serviço |
-| Front-end | **HTML + CSS + JavaScript puro** | Sem build nem framework. Basta enviar os arquivos ao bucket |
+| Front-end | **HTML + CSS + JavaScript puro** | Sem build nem framework. Os arquivos vão dentro do contêiner |
+| Contêiner | **Docker** (`Dockerfile` na raiz) | Uma imagem com a API e o site. O Cloud Build monta a imagem e o Cloud Run a executa |
 | Testes | **pytest** | Testes automatizados das regras, das rotas e do HTTP |
-| Implantação | **gcloud CLI** (Cloud Shell) ou console | Ferramentas oficiais do Google Cloud |
+| Implantação | **gcloud CLI** (Cloud Shell): `gcloud run deploy --source .` | Ferramentas oficiais do Google Cloud |
 
 ## Organização do código
 
@@ -22,8 +23,9 @@ api/
   tests/
     test_estoque.py   regras de negócio
     test_rotas.py     cada rota da API
-    test_http.py      requisições HTTP reais (CORS, JSON inválido)
-web/              site estático (HTML, CSS e JavaScript puros)
+    test_http.py      requisições HTTP reais (CORS, JSON inválido, páginas do site)
+web/              site (HTML, CSS e JavaScript puros), entregue pelo mesmo serviço
+Dockerfile        imagem única: API + site
 scripts/
   deploy.sh       cria a infraestrutura e publica (Cloud Shell)
   testar-api.sh   executa os 5 testes da Etapa 5
@@ -46,17 +48,17 @@ Essa separação permitiu testar toda a lógica sem conta na nuvem e deixa claro
 ## Integração com os serviços
 
 **Firestore (armazenamento):**
-- A função cria o cliente com `firestore.Client()`, sem passar senha ou chave. O Google injeta as credenciais da conta de serviço `stokei-api` no ambiente da função.
+- O serviço cria o cliente com `firestore.Client()`, sem passar senha ou chave. O Google injeta as credenciais da conta de serviço `stokei-api` no ambiente do contêiner.
 - A movimentação usa uma **transação**: lê o produto, calcula o novo saldo, atualiza o produto e grava o histórico. Ou tudo é gravado, ou nada é.
 - A data da movimentação é gerada pelo servidor (`SERVER_TIMESTAMP`), não pelo navegador do usuário.
 
-**Cloud Run functions (processamento):**
-- Uma única função HTTP (`api`) atende todas as rotas.
-- Responde OPTIONS para o *preflight* de CORS e adiciona os cabeçalhos CORS em toda resposta, liberando só a origem configurada em `ALLOWED_ORIGIN`.
+**Cloud Run (processamento e site):**
+- O contêiner roda o Functions Framework com uma única função HTTP (`api`), na porta informada pelo Cloud Run (`PORT`).
+- Caminhos sem extensão (`/produtos`, `/relatorio`...) são rotas da API. `/` e caminhos com extensão (`/produtos.html`, `/style.css`) devolvem os arquivos do site, que ficam na pasta indicada por `STOKEI_WEB`. O `send_from_directory` do Flask impede pedir arquivos fora dessa pasta.
+- Como o site e a API estão no mesmo endereço, o JavaScript chama a API com `fetch` em caminhos relativos (`API_URL` vazio em `web/config.js`).
+- Os cabeçalhos CORS liberam só a origem configurada em `ALLOWED_ORIGIN`, que o `deploy.sh` define como o próprio endereço do serviço.
+- O processo do contêiner não roda como root.
 - Os logs (`logging.info`) vão automaticamente para o Cloud Logging.
-
-**Cloud Storage (interface):**
-- O JavaScript do site chama a API com `fetch`. A URL da API fica numa constante (`API_URL`), que o `deploy.sh` preenche automaticamente.
 
 ## Interface
 
@@ -103,11 +105,14 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-Para subir a API com dados em memória e usar a interface:
+Para subir o site e a API com dados em memória:
 
 ```
 set STOKEI_MEMORIA=1
+set STOKEI_WEB=..\web
 functions-framework --target=api --port=8080
 ```
 
-Abra a página inicial do site (pasta `web/`) no navegador. O modo memória serve só para desenvolvimento: os dados somem ao parar o servidor. Em produção a função usa o Firestore.
+Abra http://localhost:8080. Ou, com Docker, na raiz do repositório: `docker build -t stokei .` e `docker run --rm -p 8080:8080 -e STOKEI_MEMORIA=1 stokei`.
+
+O modo memória serve só para desenvolvimento: os dados somem ao parar o servidor. Em produção o serviço usa o Firestore.

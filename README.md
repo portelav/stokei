@@ -30,26 +30,26 @@ Projeto final da disciplina de Cloud Computing (UNIMA). O enunciado pede Microso
 | Serviço Google Cloud | Papel | Equivalente Azure |
 |---|---|---|
 | Projeto do Google Cloud | Agrupa recursos, permissões e faturamento | Resource Group |
+| Cloud Run | Roda o contêiner `stokei`, que entrega o site (HTML, CSS, JS) e a API com as regras de negócio (Python) | Azure Container Apps / App Service |
 | Firestore | Guarda produtos e histórico | Table Storage / Cosmos DB |
-| Cloud Run functions | API e regras de negócio (Python) | Azure Functions |
-| Cloud Storage | Hospeda o site (HTML, CSS, JS) | Blob Storage |
+| Cloud Build e Artifact Registry | Montam e guardam a imagem do contêiner a partir do `Dockerfile` | Azure Container Registry |
 
 ## Estrutura
 
 ```
-api/                       API (Python 3.12, Cloud Run functions)
+Dockerfile                 imagem única do Stokei (API + site) para o Cloud Run
+api/                       API (Python 3.12); também entrega o site quando STOKEI_WEB está definido
   main.py                  ponto de entrada HTTP, rotas e acesso ao Firestore
   estoque.py               regras de negócio (funções puras)
   memoria.py               repositório em memória (testes e execução local)
-  tests/                   58 testes (pytest)
-  Dockerfile               imagem da API para o Cloud Run (alternativa ao deploy como função)
+  tests/                   64 testes (pytest)
 web/                       site (HTML, CSS e JS puros)
   index.html               Dashboard
   produtos.html            cadastro, busca e lista de produtos
   movimentacoes.html       entradas e saídas
   historico.html           histórico de movimentações
   style.css                visual de todas as páginas
-  config.js                endereço da API (o deploy.sh preenche)
+  config.js                endereço da API (vazio = mesmo endereço do site)
   comum.js                 chamada à API e peças de tela compartilhadas
   dashboard.js · produtos.js · movimentacoes.js · historico.js
 scripts/
@@ -61,7 +61,7 @@ docs/                      documentação das etapas, diagrama, evidências e re
 
 ## API
 
-As rotas abaixo são relativas à URL da função.
+As rotas abaixo são relativas à URL do serviço. No mesmo endereço, `/` abre o site.
 
 | Método | Rota | Corpo / parâmetros | Resposta |
 |---|---|---|---|
@@ -79,9 +79,9 @@ Erros voltam como `{"erro": "mensagem"}`, com status 400 (entrada inválida, sal
 O passo a passo completo, com os prints a tirar, está em [`docs/03-configuracao.md`](docs/03-configuracao.md). Versão curta, no **Cloud Shell**:
 
 ```
-git clone <url-do-repositorio> stokei && cd stokei
+git clone https://github.com/portelav/stokei.git stokei && cd stokei
 bash scripts/deploy.sh <ID-do-projeto>
-bash scripts/testar-api.sh <URL-da-API-mostrada-pelo-deploy>
+bash scripts/testar-api.sh <URL-mostrada-pelo-deploy>
 ```
 
 O `deploy.sh` executa, nesta ordem:
@@ -89,9 +89,8 @@ O `deploy.sh` executa, nesta ordem:
 1. ativa as APIs necessárias
 2. cria o Firestore (São Paulo)
 3. cria uma conta de serviço que só acessa o Firestore
-4. cria o bucket público do site
-5. publica a função (máximo de 2 instâncias)
-6. envia o site já apontando para a URL da API
+4. monta a imagem pelo `Dockerfile` (Cloud Build) e publica o serviço `stokei` no Cloud Run, com no máximo 2 instâncias
+5. restringe o CORS ao endereço do próprio serviço
 
 ## Rodar localmente
 
@@ -100,24 +99,33 @@ cd api
 python -m venv .venv
 .venv\Scripts\activate                 # Windows (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements-dev.txt
-pytest                                 # 58 testes
+pytest                                 # 64 testes
 ```
 
-Para subir a API sem nuvem, com os dados em memória (que se perdem ao parar o servidor):
+Para subir o site e a API sem nuvem, com os dados em memória (que se perdem ao parar o servidor):
 
 ```
 set STOKEI_MEMORIA=1                   # Linux/Mac: export STOKEI_MEMORIA=1
+set STOKEI_WEB=..\web                  # Linux/Mac: export STOKEI_WEB=../web
 functions-framework --target=api --port=8080
 ```
 
-Abra `web/index.html` no navegador. O `API_URL` em `web/config.js` já aponta para `http://localhost:8080`. Para testar a API: `bash scripts/testar-api.sh http://localhost:8080`.
+Abra http://localhost:8080. Para testar a API: `bash scripts/testar-api.sh http://localhost:8080`.
+
+Com Docker, na raiz do repositório:
+
+```
+docker build -t stokei .
+docker run --rm -p 8080:8080 -e STOKEI_MEMORIA=1 stokei
+```
 
 Para rodar localmente contra o Firestore real, faça `gcloud auth application-default login`, defina `GOOGLE_CLOUD_PROJECT=<ID-do-projeto>` e suba o servidor sem `STOKEI_MEMORIA`.
 
 ## Segurança
 
-- **Credenciais:** nenhuma no código. A função usa uma conta de serviço própria, com permissão só no Firestore (`roles/datastore.user`).
-- **Rede:** CORS restrito à origem do site e comunicação só por HTTPS.
+- **Credenciais:** nenhuma no código. O serviço usa uma conta de serviço própria, com permissão só no Firestore (`roles/datastore.user`).
+- **Rede:** comunicação só por HTTPS; o site chama a API no mesmo endereço, e o CORS fica restrito a esse endereço.
+- **Contêiner:** a imagem só leva o código da API e o site, e o processo não roda como root.
 - **Entradas:** toda entrada é validada no servidor. A interface usa `textContent`, nunca `innerHTML` com dados do usuário (evita XSS).
 - **Custos:** número máximo de instâncias limitado e orçamento com alertas.
 

@@ -10,31 +10,28 @@
   <text x="550" y="26" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f172a">Stokei: arquitetura da solução</text>
 
   <!-- Usuário -->
-  <rect x="20" y="230" width="170" height="100" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
-  <text x="105" y="262" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e1b4b">Usuário</text>
-  <text x="105" y="284" text-anchor="middle" font-size="12" fill="#334155">navegador (PC ou celular)</text>
-  <text x="105" y="304" text-anchor="middle" font-size="12" fill="#334155">HTML + CSS + JavaScript</text>
+  <rect x="20" y="290" width="170" height="100" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="105" y="322" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e1b4b">Usuário</text>
+  <text x="105" y="344" text-anchor="middle" font-size="12" fill="#334155">navegador (PC ou celular)</text>
+  <text x="105" y="364" text-anchor="middle" font-size="12" fill="#334155">uma única URL</text>
 
   <!-- Limite do projeto Google Cloud -->
   <rect x="330" y="44" width="750" height="500" rx="10" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" stroke-dasharray="8 5"/>
   <text x="346" y="66" font-size="13" font-weight="bold" fill="#475569">Projeto Google Cloud "stokei" · região southamerica-east1 (São Paulo)</text>
 
-  <!-- Setas que entram no projeto -->
-  <path d="M190,252 C250,252 300,140 378,140" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#seta)"/>
-  <text x="200" y="150" font-size="12" fill="#0f172a" font-weight="bold">① HTTPS GET</text>
-  <text x="200" y="165" font-size="11" fill="#475569">baixa a página</text>
-
-  <line x1="192" y1="315" x2="378" y2="335" stroke="#334155" stroke-width="1.8" marker-start="url(#seta)" marker-end="url(#seta)"/>
-  <text x="200" y="362" font-size="12" fill="#0f172a" font-weight="bold">② HTTPS + JSON</text>
-  <text x="200" y="377" font-size="11" fill="#475569">fetch (CORS)</text>
+  <!-- ① navegador <-> Cloud Run -->
+  <line x1="192" y1="340" x2="378" y2="340" stroke="#334155" stroke-width="1.8" marker-start="url(#seta)" marker-end="url(#seta)"/>
+  <text x="200" y="318" font-size="12" fill="#0f172a" font-weight="bold">① HTTPS</text>
+  <text x="200" y="362" font-size="11" fill="#475569">páginas do site e</text>
+  <text x="200" y="377" font-size="11" fill="#475569">chamadas da API (JSON)</text>
 
   <g transform="translate(90,0)">
-    <!-- Cloud Storage -->
+    <!-- Cloud Build + Artifact Registry -->
     <rect x="290" y="90" width="220" height="100" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
-    <text x="400" y="120" text-anchor="middle" font-size="15" font-weight="bold" fill="#064e3b">Cloud Storage</text>
-    <text x="400" y="142" text-anchor="middle" font-size="12" fill="#334155">bucket público</text>
-    <text x="400" y="162" text-anchor="middle" font-size="12" fill="#334155">index.html · style.css · app.js</text>
-    <text x="400" y="180" text-anchor="middle" font-size="11" fill="#059669">PaaS (armazenamento gerenciado)</text>
+    <text x="400" y="118" text-anchor="middle" font-size="14" font-weight="bold" fill="#064e3b">Cloud Build + Artifact Registry</text>
+    <text x="400" y="140" text-anchor="middle" font-size="12" fill="#334155">Dockerfile → imagem do contêiner</text>
+    <text x="400" y="160" text-anchor="middle" font-size="12" fill="#334155">monta e guarda a imagem</text>
+    <text x="400" y="180" text-anchor="middle" font-size="11" fill="#059669">usado só no deploy</text>
 
     <!-- Conta de serviço -->
     <rect x="580" y="90" width="230" height="100" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
@@ -43,38 +40,45 @@
     <text x="695" y="162" text-anchor="middle" font-size="12" fill="#334155">papel: Cloud Datastore User</text>
     <text x="695" y="180" text-anchor="middle" font-size="11" fill="#ea580c">sem senha/chave no código</text>
 
-    <!-- Cloud Run functions -->
-    <rect x="290" y="280" width="220" height="130" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
-    <text x="400" y="310" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">Cloud Run functions</text>
-    <text x="400" y="332" text-anchor="middle" font-size="12" fill="#334155">stokei-api (Python 3.12)</text>
-    <text x="400" y="352" text-anchor="middle" font-size="12" fill="#334155">API REST + regras de negócio</text>
-    <text x="400" y="372" text-anchor="middle" font-size="12" fill="#334155">validação · saldo · alerta · relatório</text>
-    <text x="400" y="398" text-anchor="middle" font-size="11" fill="#2563eb">PaaS (serverless / FaaS)</text>
+    <!-- Cloud Run -->
+    <rect x="290" y="255" width="220" height="170" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="400" y="283" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">Cloud Run</text>
+    <text x="400" y="303" text-anchor="middle" font-size="12" fill="#334155">serviço "stokei" (contêiner)</text>
+    <line x1="306" y1="314" x2="494" y2="314" stroke="#bfdbfe" stroke-width="1"/>
+    <text x="400" y="334" text-anchor="middle" font-size="12" fill="#334155">site: 4 páginas HTML, CSS e JS</text>
+    <text x="400" y="354" text-anchor="middle" font-size="12" fill="#334155">API REST em Python 3.12</text>
+    <text x="400" y="374" text-anchor="middle" font-size="12" fill="#334155">validação · saldo · alerta · relatório</text>
+    <text x="400" y="410" text-anchor="middle" font-size="11" fill="#2563eb">PaaS (serverless, contêiner gerenciado)</text>
 
     <!-- Firestore -->
-    <rect x="700" y="280" width="250" height="130" rx="8" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
-    <text x="825" y="310" text-anchor="middle" font-size="15" font-weight="bold" fill="#713f12">Firestore (modo nativo)</text>
-    <text x="825" y="334" text-anchor="middle" font-size="12" fill="#334155">coleção "produtos"</text>
-    <text x="825" y="354" text-anchor="middle" font-size="12" fill="#334155">coleção "movimentacoes"</text>
-    <text x="825" y="374" text-anchor="middle" font-size="12" fill="#334155">banco NoSQL gerenciado</text>
-    <text x="825" y="398" text-anchor="middle" font-size="11" fill="#ca8a04">PaaS (banco gerenciado)</text>
+    <rect x="700" y="275" width="250" height="130" rx="8" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+    <text x="825" y="305" text-anchor="middle" font-size="15" font-weight="bold" fill="#713f12">Firestore (modo nativo)</text>
+    <text x="825" y="329" text-anchor="middle" font-size="12" fill="#334155">coleção "produtos"</text>
+    <text x="825" y="349" text-anchor="middle" font-size="12" fill="#334155">coleção "movimentacoes"</text>
+    <text x="825" y="369" text-anchor="middle" font-size="12" fill="#334155">banco NoSQL gerenciado</text>
+    <text x="825" y="393" text-anchor="middle" font-size="11" fill="#ca8a04">PaaS (banco gerenciado)</text>
 
     <!-- Monitoramento e custos -->
-    <rect x="290" y="460" width="660" height="60" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
-    <text x="620" y="486" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b">Cloud Logging / Monitoring · Faturamento + orçamento com alertas</text>
-    <text x="620" y="506" text-anchor="middle" font-size="12" fill="#475569">logs de execução, métricas, erros e consumo · ferramentas SaaS de gestão</text>
+    <rect x="290" y="465" width="660" height="60" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text x="620" y="491" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e293b">Cloud Logging / Monitoring · Faturamento + orçamento com alertas</text>
+    <text x="620" y="511" text-anchor="middle" font-size="12" fill="#475569">logs de execução, métricas, erros e consumo · ferramentas SaaS de gestão</text>
 
-    <!-- função <-> Firestore -->
-    <line x1="512" y1="345" x2="698" y2="345" stroke="#334155" stroke-width="1.8" marker-start="url(#seta)" marker-end="url(#seta)"/>
-    <text x="605" y="333" text-anchor="middle" font-size="12" fill="#0f172a" font-weight="bold">③ leitura / gravação</text>
-    <text x="605" y="365" text-anchor="middle" font-size="11" fill="#475569">transação (saldo + histórico)</text>
+    <!-- build -> Cloud Run -->
+    <line x1="400" y1="192" x2="400" y2="253" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+    <text x="408" y="228" font-size="11" fill="#065f46">implanta a imagem</text>
 
-    <!-- conta de serviço -> função -->
-    <path d="M640,192 C640,240 470,230 450,278" fill="none" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
-    <text x="560" y="250" font-size="11" fill="#9a3412">a função executa com esta identidade</text>
+    <!-- Cloud Run <-> Firestore -->
+    <line x1="512" y1="340" x2="698" y2="340" stroke="#334155" stroke-width="1.8" marker-start="url(#seta)" marker-end="url(#seta)"/>
+    <text x="605" y="328" text-anchor="middle" font-size="12" fill="#0f172a" font-weight="bold">② leitura / gravação</text>
+    <text x="605" y="360" text-anchor="middle" font-size="11" fill="#475569">transação (saldo + histórico)</text>
 
-    <!-- função -> logs -->
-    <line x1="400" y1="412" x2="400" y2="458" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
-    <text x="408" y="440" font-size="11" fill="#475569">logs e métricas</text>
+    <!-- conta de serviço -> Cloud Run -->
+    <path d="M660,192 C660,235 540,240 512,268" fill="none" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+    <text x="672" y="222" font-size="11" fill="#9a3412">o serviço executa</text>
+    <text x="672" y="237" font-size="11" fill="#9a3412">com esta identidade</text>
+
+    <!-- Cloud Run -> logs -->
+    <line x1="400" y1="427" x2="400" y2="463" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+    <text x="408" y="450" font-size="11" fill="#475569">logs e métricas</text>
   </g>
 </svg>

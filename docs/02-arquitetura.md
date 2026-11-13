@@ -10,10 +10,10 @@ O diagrama também está em `arquitetura.svg` (editável) e `arquitetura.png` (p
 
 | Componente | Serviço | O que faz |
 |---|---|---|
-| Interface web | **Cloud Storage** (bucket público) | Guarda e entrega os arquivos do site: quatro páginas HTML (Dashboard, Produtos, Movimentações e Histórico), um CSS e os scripts em JavaScript. O navegador baixa os arquivos e executa o JavaScript localmente |
-| API e regras de negócio | **Cloud Run functions** (`stokei-api`, Python 3.12) | Recebe as requisições HTTP, valida os dados e aplica as regras (saldo não pode ficar negativo, código único, alerta de mínimo, busca, relatório). Responde em JSON |
+| Site e API | **Cloud Run** (serviço `stokei`, um contêiner com Python 3.12) | Entrega as quatro páginas do site (Dashboard, Produtos, Movimentações e Histórico), o CSS e os scripts. No mesmo endereço, recebe as requisições da API, valida os dados e aplica as regras (saldo não pode ficar negativo, código único, alerta de mínimo, busca, relatório), respondendo em JSON |
+| Imagem do contêiner | **Cloud Build + Artifact Registry** | No deploy, o Cloud Build monta a imagem a partir do `Dockerfile` e o Artifact Registry a guarda; o Cloud Run roda essa imagem |
 | Banco de dados | **Firestore** (modo nativo) | Armazena os produtos (coleção `produtos`) e o histórico (coleção `movimentacoes`) |
-| Identidade da função | **IAM, conta de serviço** `stokei-api` | Identidade com que a função roda. Tem apenas o papel *Cloud Datastore User*, ou seja, só pode ler e gravar no Firestore |
+| Identidade do serviço | **IAM, conta de serviço** `stokei-api` | Identidade com que o serviço roda. Tem apenas o papel *Cloud Datastore User*, ou seja, só pode ler e gravar no Firestore |
 | Gestão | **Cloud Logging / Monitoring, Faturamento** | Logs de cada execução, métricas (requisições, latência, erros), consumo e orçamento com alertas |
 | Agrupamento | **Projeto do Google Cloud** | Contém todos os recursos, permissões e o faturamento (papel equivalente ao Resource Group do Azure) |
 
@@ -21,12 +21,12 @@ O diagrama também está em `arquitetura.svg` (editável) e `arquitetura.png` (p
 
 | # | De → Para | Protocolo | Conteúdo |
 |---|---|---|---|
-| ① | Navegador → Cloud Storage | HTTPS (GET) | Baixa as páginas HTML, o CSS e os scripts JS |
-| ② | Navegador ↔ Cloud Run functions | HTTPS + JSON (`fetch`), com CORS liberado só para a origem do site | Requisições da API e respostas |
-| ③ | Cloud Run functions ↔ Firestore | Biblioteca cliente do Google (gRPC sobre TLS), autenticada pela conta de serviço | Leitura e gravação de documentos, em transação |
-| — | Cloud Run functions → Cloud Logging | Automático | Logs e métricas de cada execução |
+| ① | Navegador ↔ Cloud Run | HTTPS. O navegador baixa as páginas, o CSS e os scripts e, no mesmo endereço, chama a API com `fetch` e JSON. O CORS fica restrito a esse endereço | Páginas do site, requisições da API e respostas |
+| ② | Cloud Run ↔ Firestore | Biblioteca cliente do Google (gRPC sobre TLS), autenticada pela conta de serviço | Leitura e gravação de documentos, em transação |
+| — | Cloud Run → Cloud Logging | Automático | Logs e métricas de cada execução |
+| — | Cloud Build → Artifact Registry → Cloud Run | Só no deploy | A imagem montada pelo `Dockerfile` é guardada e publicada |
 
-Toda a comunicação é criptografada (HTTPS/TLS). O navegador nunca fala direto com o banco: todo acesso aos dados passa pela função, que valida as regras.
+Toda a comunicação é criptografada (HTTPS/TLS). O navegador nunca fala direto com o banco: todo acesso aos dados passa pelo serviço, que valida as regras.
 
 ### Rotas da API
 
@@ -44,7 +44,7 @@ Toda a comunicação é criptografada (HTTPS/TLS). O navegador nunca fala direto
 ```mermaid
 sequenceDiagram
     actor U as Usuário (navegador)
-    participant F as Cloud Run functions
+    participant F as Cloud Run (stokei)
     participant DB as Firestore
 
     U->>F: POST /movimentacao {id, tipo: "saida", quantidade: 3}
@@ -103,22 +103,22 @@ A atualização do saldo e a gravação no histórico acontecem na **mesma trans
 
 | Serviço | Modelo | Por quê |
 |---|---|---|
-| Cloud Storage | **PaaS** (armazenamento gerenciado) | O grupo só envia os arquivos do site. O Google cuida de discos, replicação, disponibilidade e da entrega por HTTPS, sem servidor web para configurar |
-| Cloud Run functions | **PaaS** (serverless / FaaS) | O grupo entrega só o código Python. O Google cuida de servidor, sistema operacional, runtime Python, escala e disponibilidade, e cobra por execução |
+| Cloud Run | **PaaS** (serverless, contêiner gerenciado) | O grupo entrega a imagem do contêiner (código Python e site, descritos no `Dockerfile`). O Google cuida dos servidores, da rede, do HTTPS, da escala e da disponibilidade, e cobra só enquanto atende requisições |
+| Cloud Build e Artifact Registry | **PaaS** | Montam e guardam a imagem sem que o grupo precise de uma máquina de build |
 | Firestore | **PaaS** (banco gerenciado) | O grupo define coleções e documentos. O Google cuida de instalação, replicação, backup da infraestrutura e escala |
 | Console, Cloud Logging/Monitoring, Faturamento | **SaaS** | Ferramentas prontas, usadas pelo navegador, para administrar e acompanhar o projeto |
 | **O próprio Stokei** | **SaaS** (do ponto de vista do cliente) | O dono do negócio usa o sistema pelo navegador, sem instalar nada e sem saber onde ele roda. É exatamente o modelo SaaS |
 
-**Por que não há IaaS:** o modelo predominante é o PaaS. O IaaS só apareceria se o grupo usasse uma máquina virtual (Compute Engine) e instalasse o servidor por conta própria. Essa opção foi descartada (ver "Decisões de arquitetura"). Alguns materiais classificam o armazenamento de objetos (Cloud Storage) como IaaS por ser "infraestrutura de armazenamento". Aqui ele foi tratado como PaaS porque o grupo não gerencia nenhuma infraestrutura dele, apenas envia arquivos.
+**Por que não há IaaS:** o modelo predominante é o PaaS. O IaaS só apareceria se o grupo usasse uma máquina virtual (Compute Engine) e instalasse o servidor por conta própria. Essa opção foi descartada (ver "Decisões de arquitetura"). Usar contêiner não transforma o projeto em IaaS: o grupo define o que roda dentro da imagem, mas não administra máquina, sistema operacional do servidor, rede nem escala.
 
 **Responsabilidades (quem cuida de quê):**
 
-| Camada | Se fosse IaaS (máquina virtual) | No Stokei (PaaS/serverless) |
+| Camada | Se fosse IaaS (máquina virtual) | No Stokei (Cloud Run, PaaS) |
 |---|---|---|
 | Código e regras de negócio | grupo | grupo |
 | Dados | grupo | grupo |
-| Runtime (Python) e bibliotecas do sistema | grupo | **Google** |
-| Sistema operacional e atualizações de segurança | grupo | **Google** |
+| Imagem do contêiner (Python e bibliotecas, no `Dockerfile`) | grupo | grupo |
+| Servidor, sistema operacional da máquina e atualizações de segurança | grupo | **Google** |
 | Servidor, escala e disponibilidade | grupo | **Google** |
 | Hardware, rede e datacenter | Google | Google |
 
@@ -126,8 +126,8 @@ A atualização do saldo e a gravação no histórico acontecem na **mesma trans
 
 | Decisão | Alternativa descartada | Motivo |
 |---|---|---|
-| Função serverless (PaaS) | Máquina virtual com servidor web (IaaS) | A VM fica ligada e cobrando 24h, exige atualizar o sistema operacional e configurar o servidor. A função só roda quando é chamada e cabe na cota gratuita |
+| Contêiner serverless no Cloud Run (PaaS) | Máquina virtual com servidor web (IaaS) | A VM fica ligada e cobrando 24h, exige atualizar o sistema operacional e configurar o servidor. O Cloud Run só roda quando é chamado e cabe na cota gratuita |
 | Firestore (NoSQL) | Cloud SQL (banco relacional) | O Cloud SQL não tem cota gratuita e cobra por hora ligado. O modelo de dados é simples (2 coleções) e o Firestore tem transações, que garantem a consistência do saldo |
-| Página estática no Cloud Storage | Servidor web próprio para a interface | A interface é só HTML, CSS e JS. Servir direto do storage dispensa servidor e custa praticamente zero |
-| Acesso ao banco só pela função | Navegador acessando o banco direto | Concentra as regras de negócio e a validação num só lugar e não expõe credenciais no navegador |
+| Site e API no mesmo contêiner | Site num bucket do Cloud Storage e API separada | Um deploy só e uma URL só. Como o site e a API ficam no mesmo endereço, não é preciso configurar o endereço da API no site nem liberar CORS para outra origem |
+| Acesso ao banco só pelo serviço | Navegador acessando o banco direto | Concentra as regras de negócio e a validação num só lugar e não expõe credenciais no navegador |
 | Região `southamerica-east1` (São Paulo) | Regiões nos EUA | Menor latência para usuários no Brasil |
